@@ -1,4 +1,37 @@
-target/
-.idea/
+# Prerequisites
+*.class
+
+# Mobile Tools / Android Studio / Xcode
+.MTJlogs/
+
+# Package Files
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# Virtual environments
 .env
+.env.local
+
+# macOS System Files
+.DS_Store
+**/.DS_Store
+
+# IntelliJ IDEA
+.idea/
 *.iml
+*.iws
+*.ipr
+out/
+
+# Maven build outputs
+**/target/
+
+#DS Store
+**/.DS_Store
+
+#Node Modules
+**/node_modules/
