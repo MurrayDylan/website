@@ -72,7 +72,7 @@ public class Project {
     public String getDescription() {
         return description;
     }
-    
+
     public String getProjectUrl() {
         return projectUrl;
     }

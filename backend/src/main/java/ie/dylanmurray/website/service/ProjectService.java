@@ -5,6 +5,7 @@ import ie.dylanmurray.website.dto.project.ProjectRequest;
 import ie.dylanmurray.website.dto.project.ProjectResponse;
 import ie.dylanmurray.website.entity.Project;
 import ie.dylanmurray.website.entity.Technology;
+import ie.dylanmurray.website.exception.ResourceNotFoundException;
 import ie.dylanmurray.website.mapper.ProjectMapper;
 import ie.dylanmurray.website.repository.ProjectRepository;
 import org.springframework.stereotype.Service;
@@ -44,7 +45,11 @@ public class ProjectService {
     public ProjectResponse getProjectById(Long id) {
         Project project = projectRepository
                 .findById(id)
-                .orElseThrow();
+                .orElseThrow(
+                    () -> new ResourceNotFoundException(
+                            "Project not found with id: " + id
+                    )
+                );
 
         return projectMapper.toResponse(project);
 

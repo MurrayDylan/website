@@ -1,15 +1,20 @@
 package ie.dylanmurray.website.dto.project;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+
 import java.util.List;
 
 public class ProjectRequest {
 
+    @NotBlank(message = "Title cannot be empty")
     private String title;
 
     private String description;
 
     private String projectUrl;
 
+    @NotEmpty(message = "Technologies must have atleast one technology")
     private List<String> technologies;
 
     public ProjectRequest() {
