@@ -72,24 +72,23 @@ public class Project {
     public String getDescription() {
         return description;
     }
-
-
+    
     public String getProjectUrl() {
         return projectUrl;
     }
-
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-
     public Set<Technology> getTechnologies() {
         return technologies;
     }
 
-
     public void addTechnology(Technology technology) {
+
         technologies.add(technology);
+        technology.getProjects().add(this);
+
     }
 }
