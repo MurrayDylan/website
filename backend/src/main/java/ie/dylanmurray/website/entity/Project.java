@@ -91,4 +91,21 @@ public class Project {
         technology.getProjects().add(this);
 
     }
+
+    public void update(
+            String title,
+            String description,
+            String projectUrl
+    ) {
+        this.title = title;
+        this.description = description;
+        this.projectUrl = projectUrl;
+    }
+
+    public void replaceTechnologies(
+            Set<Technology> technologies
+    ) {
+        this.technologies.clear();
+        this.technologies.addAll(technologies);
+    }
 }

@@ -80,4 +80,52 @@ public class ProjectService {
         return projectMapper.toResponse(savedProject);
 
     }
+
+    @Transactional
+    public ProjectResponse updateProject(
+            Long id,
+            ProjectRequest request
+    ) {
+
+        Project project = projectRepository
+                .findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Project not found with id: " + id
+                        ));
+
+        project.update(
+                request.getTitle(),
+                request.getDescription(),
+                request.getProjectUrl()
+        );
+
+        Set<Technology> technologies = new HashSet<>();
+
+        for (String technologyName : request.getTechnologies()) {
+
+            technologies.add(
+                    technologyService.findOrCreate(
+                            technologyName
+                    )
+            );
+        }
+
+        project.replaceTechnologies(technologies);
+
+        return projectMapper.toResponse(project);
+    }
+
+    @Transactional
+    public void deleteProject(Long id) {
+
+        Project project = projectRepository
+                .findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Project not found with id: " + id
+                        ));
+
+        projectRepository.delete(project);
+    }
 }

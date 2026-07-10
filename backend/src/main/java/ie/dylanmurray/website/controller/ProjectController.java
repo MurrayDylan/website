@@ -50,4 +50,25 @@ public class ProjectController {
                 .body(response);
 
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ProjectResponse> updateProject(
+            @PathVariable Long id,
+            @Valid @RequestBody ProjectRequest request
+    ) {
+
+        return ResponseEntity.ok(
+                projectService.updateProject(id, request)
+        );
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteProject(
+            @PathVariable Long id
+    ) {
+
+        projectService.deleteProject(id);
+
+        return ResponseEntity.noContent().build();
+    }
 }
