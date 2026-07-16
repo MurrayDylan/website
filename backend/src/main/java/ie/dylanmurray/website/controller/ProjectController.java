@@ -4,6 +4,7 @@ import ie.dylanmurray.website.dto.project.ProjectRequest;
 import ie.dylanmurray.website.dto.project.ProjectResponse;
 import ie.dylanmurray.website.service.ProjectService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -39,6 +40,7 @@ public class ProjectController {
 
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<ProjectResponse> createProject(
             @Valid @RequestBody ProjectRequest request
@@ -51,6 +53,7 @@ public class ProjectController {
 
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<ProjectResponse> updateProject(
             @PathVariable Long id,
@@ -62,6 +65,7 @@ public class ProjectController {
         );
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProject(
             @PathVariable Long id
@@ -71,4 +75,5 @@ public class ProjectController {
 
         return ResponseEntity.noContent().build();
     }
+
 }
