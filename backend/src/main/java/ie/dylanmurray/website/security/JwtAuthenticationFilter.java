@@ -1,7 +1,7 @@
 package ie.dylanmurray.website.security;
 
 
-import ie.dylanmurray.website.security.CustomUserDetailsService;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -26,18 +26,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
 
-    private final CustomUserDetailsService userDetailsService;
+        private final UserDetailsService userDetailsService;
 
 
-    public JwtAuthenticationFilter(
-            JwtService jwtService,
-            CustomUserDetailsService userDetailsService
-    ) {
+        public JwtAuthenticationFilter(
+                        JwtService jwtService,
+                        UserDetailsService userDetailsService
+        ) {
 
-        this.jwtService = jwtService;
-        this.userDetailsService = userDetailsService;
+                this.jwtService = jwtService;
+                this.userDetailsService = userDetailsService;
 
-    }
+        }
 
 
 

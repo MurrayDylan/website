@@ -1,9 +1,12 @@
 package ie.dylanmurray.website.dto.project;
 
+import ie.dylanmurray.website.dto.projectlink.*;
+
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ProjectRequest {
@@ -15,10 +18,10 @@ public class ProjectRequest {
     @Size(max = 3000, message = "Description cannot exceed 3000 characters")
     private String description;
 
-    private String projectUrl;
+    @Valid
+    private List<ProjectLinkRequest> links = new ArrayList<>();
 
-    @NotEmpty(message = "Technologies must have atleast one technology")
-    private List<@NotBlank String> technologies;
+    private List<String> technologies = new ArrayList<>();
 
     public ProjectRequest() {
     }
@@ -26,12 +29,12 @@ public class ProjectRequest {
     public ProjectRequest(
             String title,
             String description,
-            String projectUrl,
+            List<ProjectLinkRequest> links,
             List<String> technologies
     ) {
         this.title = title;
         this.description = description;
-        this.projectUrl = projectUrl;
+        this.links = links;
         this.technologies = technologies;
     }
 
@@ -43,8 +46,8 @@ public class ProjectRequest {
         return description;
     }
 
-    public String getProjectUrl() {
-        return projectUrl;
+    public List<ProjectLinkRequest> getLinks() {
+        return links;
     }
 
     public List<String> getTechnologies() {

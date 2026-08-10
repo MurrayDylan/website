@@ -11,12 +11,15 @@ public class ProjectMapper {
 
 
     private final TechnologyMapper technologyMapper;
+    private final ProjectLinkMapper projectLinkMapper;
 
 
     public ProjectMapper(
-            TechnologyMapper technologyMapper
+            TechnologyMapper technologyMapper,
+            ProjectLinkMapper projectLinkMapper
     ) {
         this.technologyMapper = technologyMapper;
+        this.projectLinkMapper = projectLinkMapper;
     }
 
 
@@ -31,7 +34,10 @@ public class ProjectMapper {
 
                 project.getDescription(),
 
-                project.getProjectUrl(),
+                project.getLinks().
+                        stream()
+                        .map(projectLinkMapper::toResponse)
+                        .collect(Collectors.toList()),
 
                 project.getCreatedAt(),
 

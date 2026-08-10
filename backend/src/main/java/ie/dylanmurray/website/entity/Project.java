@@ -3,7 +3,9 @@ package ie.dylanmurray.website.entity;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 
@@ -11,27 +13,25 @@ import java.util.Set;
 @Table(name = "projects")
 public class Project {
 
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
     @Column(nullable = false)
     private String title;
-
 
     @Column(columnDefinition = "TEXT")
     private String description;
 
-
-    @Column(name = "project_url")
-    private String projectUrl;
-
+    @OneToMany(
+            mappedBy = "project",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<ProjectLink> links = new ArrayList<>();
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
-
 
     @ManyToMany
     @JoinTable(
@@ -41,40 +41,32 @@ public class Project {
     )
     private Set<Technology> technologies = new HashSet<>();
 
-
     protected Project() {
-
     }
-
 
     public Project(
             String title,
-            String description,
-            String projectUrl
+            String description
     ) {
         this.title = title;
         this.description = description;
-        this.projectUrl = projectUrl;
         this.createdAt = LocalDateTime.now();
     }
-
 
     public Long getId() {
         return id;
     }
 
-
     public String getTitle() {
         return title;
     }
-
 
     public String getDescription() {
         return description;
     }
 
-    public String getProjectUrl() {
-        return projectUrl;
+    public List<ProjectLink> getLinks() {
+        return links;
     }
 
     public LocalDateTime getCreatedAt() {
@@ -85,27 +77,41 @@ public class Project {
         return technologies;
     }
 
-    public void addTechnology(Technology technology) {
+    public void addLink(ProjectLink link) {
+        links.add(link);
+        link.setProject(this);
+    }
 
+    public void removeLink(ProjectLink link) {
+        links.remove(link);
+        link.setProject(null);
+    }
+
+    public void addTechnology(Technology technology) {
         technologies.add(technology);
         technology.getProjects().add(this);
-
     }
 
     public void update(
             String title,
-            String description,
-            String projectUrl
+            String description
     ) {
         this.title = title;
         this.description = description;
-        this.projectUrl = projectUrl;
     }
 
     public void replaceTechnologies(
             Set<Technology> technologies
     ) {
+        for (Technology tech : new HashSet<>(this.technologies)) {
+            tech.getProjects().remove(this);
+        }
+
         this.technologies.clear();
-        this.technologies.addAll(technologies);
+
+        for (Technology tech : technologies) {
+            this.technologies.add(tech);
+            tech.getProjects().add(this);
+        }
     }
 }
