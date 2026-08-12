@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Entity
@@ -56,6 +58,13 @@ public class Work {
     @Column
     private Integer displayOrder;
 
+    @OneToMany(
+            mappedBy = "work",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    @OrderBy("displayOrder ASC")
+    private List<WorkMedia> media = new ArrayList<>();
 
     @ManyToMany
     @JoinTable(
@@ -95,6 +104,20 @@ public class Work {
         this.displayOrder = displayOrder;
     }
 
+
+    public List<WorkMedia> getMedia() {
+        return media;
+    }
+
+    public void addMedia(WorkMedia workMedia) {
+        media.add(workMedia);
+        workMedia.setWork(this);
+    }
+
+    public void removeMedia(WorkMedia workMedia) {
+        media.remove(workMedia);
+        workMedia.setWork(null);
+    }
 
     public Long getId() {
         return id;

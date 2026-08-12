@@ -9,6 +9,7 @@ import ie.dylanmurray.website.mapper.WorkMapper;
 import ie.dylanmurray.website.repository.TechnologyRepository;
 import ie.dylanmurray.website.repository.WorkRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Set;
@@ -34,6 +35,7 @@ public class WorkService {
     }
 
 
+    @Transactional(readOnly = true)
     public List<WorkResponse> getAllWork() {
 
         return workRepository.findAllOrdered()
@@ -43,6 +45,7 @@ public class WorkService {
     }
 
 
+    @Transactional(readOnly = true)
     public WorkResponse getWorkById(Long id) {
 
         Work work = workRepository.findById(id)
@@ -56,6 +59,7 @@ public class WorkService {
     }
 
 
+    @Transactional
     public WorkResponse createWork(WorkRequest request) {
 
         Set<Technology> technologies =
@@ -82,6 +86,7 @@ public class WorkService {
     }
 
 
+    @Transactional
     public WorkResponse updateWork(Long id, WorkRequest request) {
 
         Work work = workRepository.findById(id)
@@ -115,6 +120,7 @@ public class WorkService {
     }
 
 
+    @Transactional
     public void deleteWork(Long id) {
 
         Work work = workRepository.findById(id)
@@ -128,7 +134,9 @@ public class WorkService {
     }
 
 
-    private Set<Technology> findTechnologies(Set<Long> technologyIds) {
+    private Set<Technology> findTechnologies(
+            Set<Long> technologyIds
+    ) {
 
         if (technologyIds == null || technologyIds.isEmpty()) {
             return Set.of();

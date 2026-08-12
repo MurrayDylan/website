@@ -1,112 +1,158 @@
--- Table 1: Editable content pages
+-- ============================================================
+-- Pages
+-- ============================================================
+
 CREATE TABLE pages (
-    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    slug VARCHAR(100) NOT NULL UNIQUE,
-    title VARCHAR(255) NOT NULL,
-    content TEXT,
-    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+                       id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+
+                       slug VARCHAR(100) NOT NULL,
+
+                       title VARCHAR(255) NOT NULL,
+
+                       content TEXT,
+
+                       updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+                       CONSTRAINT uk_pages_slug
+                           UNIQUE (slug)
 );
 
 
--- Table 2: Master Media Table
+-- ============================================================
+-- Media
+-- ============================================================
+
 CREATE TABLE media (
-    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+                       id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 
-    file_hash VARCHAR(64) NOT NULL UNIQUE,
+                       original_filename VARCHAR(255) NOT NULL,
 
-    original_filename VARCHAR(255) NOT NULL,
-    stored_filename VARCHAR(255) NOT NULL UNIQUE,
+                       storage_filename VARCHAR(500) NOT NULL UNIQUE,
 
-    mime_type VARCHAR(100) NOT NULL,
-    file_size BIGINT NOT NULL,
+                       content_type VARCHAR(100) NOT NULL,
 
-    storage_key VARCHAR(255) NOT NULL UNIQUE,
+                       file_size BIGINT NOT NULL,
 
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+                       sha256_hash VARCHAR(64) NOT NULL UNIQUE,
+
+                       created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+                       CONSTRAINT uk_media_sha256_hash
+                           UNIQUE (sha256_hash)
 );
 
 
--- Table 3: Project <-> Media
+-- ============================================================
+-- Project Media
+-- ============================================================
+
 CREATE TABLE project_media (
-    project_id BIGINT NOT NULL,
-    media_id BIGINT NOT NULL,
+                               id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 
-    display_order INTEGER NOT NULL DEFAULT 0,
-    caption TEXT,
-    alt_text TEXT,
+                               project_id BIGINT NOT NULL,
 
-    PRIMARY KEY (project_id, media_id),
+                               media_id BIGINT NOT NULL,
 
-    CONSTRAINT fk_project_media_project
-        FOREIGN KEY (project_id)
-            REFERENCES projects(id)
-            ON DELETE CASCADE,
+                               display_order INTEGER NOT NULL DEFAULT 0,
 
-    CONSTRAINT fk_project_media_media
-        FOREIGN KEY (media_id)
-            REFERENCES media(id)
-            ON DELETE CASCADE
+                               caption TEXT,
+
+                               alt_text TEXT,
+
+                               CONSTRAINT fk_project_media_project
+                                   FOREIGN KEY (project_id)
+                                       REFERENCES projects(id)
+                                       ON DELETE CASCADE,
+
+                               CONSTRAINT fk_project_media_media
+                                   FOREIGN KEY (media_id)
+                                       REFERENCES media(id)
+                                       ON DELETE RESTRICT,
+
+                               CONSTRAINT uk_project_media_project_media
+                                   UNIQUE (project_id, media_id)
 );
 
 
--- Table 4: Work Experience <-> Media
-CREATE TABLE work_experience_media (
-    work_experience_id BIGINT NOT NULL,
-    media_id BIGINT NOT NULL,
+-- ============================================================
+-- Work Experience Media
+-- ============================================================
 
-    display_order INTEGER NOT NULL DEFAULT 0,
-    caption TEXT,
-    alt_text TEXT,
+CREATE TABLE work_media (
+                            id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 
-    PRIMARY KEY (work_experience_id, media_id),
+                            work_id BIGINT NOT NULL,
 
-    CONSTRAINT fk_work_experience_media_work
-        FOREIGN KEY (work_experience_id)
-            REFERENCES work_experience(id)
-            ON DELETE CASCADE,
+                            media_id BIGINT NOT NULL,
 
-    CONSTRAINT fk_work_experience_media_media
-        FOREIGN KEY (media_id)
-            REFERENCES media(id)
-            ON DELETE CASCADE
+                            display_order INTEGER NOT NULL DEFAULT 0,
+
+                            caption TEXT,
+
+                            alt_text TEXT,
+
+                            CONSTRAINT fk_work_media_work
+                                FOREIGN KEY (work_id)
+                                    REFERENCES work_experience(id)
+                                    ON DELETE CASCADE,
+
+                            CONSTRAINT fk_work_media_media
+                                FOREIGN KEY (media_id)
+                                    REFERENCES media(id)
+                                    ON DELETE RESTRICT,
+
+                            CONSTRAINT uk_work_media_work_media
+                                UNIQUE (work_id, media_id)
 );
 
 
--- Table 5: Page <-> Media
+-- ============================================================
+-- Page Media
+-- ============================================================
+
 CREATE TABLE page_media (
-    page_id BIGINT NOT NULL,
-    media_id BIGINT NOT NULL,
+                            id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 
-    display_order INTEGER NOT NULL DEFAULT 0,
-    caption TEXT,
-    alt_text TEXT,
+                            page_id BIGINT NOT NULL,
 
-    PRIMARY KEY (page_id, media_id),
+                            media_id BIGINT NOT NULL,
 
-    CONSTRAINT fk_page_media_page
-        FOREIGN KEY (page_id)
-            REFERENCES pages(id)
-            ON DELETE CASCADE,
+                            display_order INTEGER NOT NULL DEFAULT 0,
 
-    CONSTRAINT fk_page_media_media
-        FOREIGN KEY (media_id)
-            REFERENCES media(id)
-            ON DELETE CASCADE
+                            caption TEXT,
+
+                            alt_text TEXT,
+
+                            CONSTRAINT fk_page_media_page
+                                FOREIGN KEY (page_id)
+                                    REFERENCES pages(id)
+                                    ON DELETE CASCADE,
+
+                            CONSTRAINT fk_page_media_media
+                                FOREIGN KEY (media_id)
+                                    REFERENCES media(id)
+                                    ON DELETE RESTRICT,
+
+                            CONSTRAINT uk_page_media_page_media
+                                UNIQUE (page_id, media_id)
 );
 
 
--- Indexes for looking up media belonging to each parent.
+-- ============================================================
+-- Indexes
+-- ============================================================
+
 CREATE INDEX idx_project_media_project_id
     ON project_media(project_id);
 
 CREATE INDEX idx_project_media_media_id
     ON project_media(media_id);
 
-CREATE INDEX idx_work_experience_media_work_id
-    ON work_experience_media(work_experience_id);
+CREATE INDEX idx_work_media_work_id
+    ON work_media(work_id);
 
-CREATE INDEX idx_work_experience_media_media_id
-    ON work_experience_media(media_id);
+CREATE INDEX idx_work_media_media_id
+    ON work_media(media_id);
 
 CREATE INDEX idx_page_media_page_id
     ON page_media(page_id);

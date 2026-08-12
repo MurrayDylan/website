@@ -85,6 +85,7 @@ class ProjectControllerTest {
                         "My website",
                         List.of(),
                         null,
+                        List.of(),
                         List.of()
                 );
 
@@ -240,6 +241,7 @@ class ProjectControllerTest {
                         "My website",
                         List.of(),
                         null,
+                        List.of(),
                         List.of()
                 );
 

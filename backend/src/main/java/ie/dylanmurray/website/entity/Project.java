@@ -30,6 +30,14 @@ public class Project {
     )
     private List<ProjectLink> links = new ArrayList<>();
 
+    @OneToMany(
+            mappedBy = "project",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    @OrderBy("displayOrder ASC")
+    private List<ProjectMedia> media = new ArrayList<>();
+
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
@@ -69,6 +77,10 @@ public class Project {
         return links;
     }
 
+    public List<ProjectMedia> getMedia() {
+        return media;
+    }
+
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
@@ -85,6 +97,16 @@ public class Project {
     public void removeLink(ProjectLink link) {
         links.remove(link);
         link.setProject(null);
+    }
+
+    public void addMedia(ProjectMedia projectMedia) {
+        media.add(projectMedia);
+        projectMedia.setProject(this);
+    }
+
+    public void removeMedia(ProjectMedia projectMedia) {
+        media.remove(projectMedia);
+        projectMedia.setProject(null);
     }
 
     public void addTechnology(Technology technology) {

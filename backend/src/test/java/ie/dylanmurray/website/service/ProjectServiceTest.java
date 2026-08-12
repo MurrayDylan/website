@@ -59,6 +59,7 @@ class ProjectServiceTest {
                         "My website",
                         List.of(),
                         null,
+                        List.of(),
                         List.of()
                 );
 
@@ -140,9 +141,10 @@ class ProjectServiceTest {
                 new ProjectResponse(
                         1L,
                         "Portfolio",
-                        "Website project",
+                        "My website",
                         List.of(),
                         null,
+                        List.of(),
                         List.of()
                 );
 
@@ -208,9 +210,10 @@ class ProjectServiceTest {
                 new ProjectResponse(
                         1L,
                         "Portfolio",
-                        "Website project",
+                        "My website",
                         List.of(),
                         null,
+                        List.of(),
                         List.of()
                 );
 

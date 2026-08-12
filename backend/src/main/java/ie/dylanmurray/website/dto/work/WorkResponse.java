@@ -1,10 +1,11 @@
 package ie.dylanmurray.website.dto.work;
 
 import ie.dylanmurray.website.dto.technology.TechnologyResponse;
+import ie.dylanmurray.website.dto.workmedia.WorkMediaResponse;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
-
 
 public record WorkResponse(
 
@@ -30,7 +31,9 @@ public record WorkResponse(
 
         Integer displayOrder,
 
-        Set<TechnologyResponse> technologies
+        Set<TechnologyResponse> technologies,
+
+        List<WorkMediaResponse> media
 
 ) {
 }

@@ -1,8 +1,9 @@
 package ie.dylanmurray.website.dto.project;
 
-import ie.dylanmurray.website.dto.projectlink.ProjectLinkRequest;
+import ie.dylanmurray.website.dto.media.MediaResponse;
+import ie.dylanmurray.website.dto.projectmedia.ProjectMediaResponse;
+import ie.dylanmurray.website.dto.projectlink.ProjectLinkResponse;
 import ie.dylanmurray.website.dto.technology.TechnologyResponse;
-import ie .dylanmurray.website.dto.projectlink.ProjectLinkResponse;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -21,6 +22,8 @@ public class ProjectResponse {
 
     private List<TechnologyResponse> technologies;
 
+    private List<ProjectMediaResponse> media;
+
 
     public ProjectResponse(
             Long id,
@@ -28,7 +31,8 @@ public class ProjectResponse {
             String description,
             List<ProjectLinkResponse> links,
             LocalDateTime createdAt,
-            List<TechnologyResponse> technologies
+            List<TechnologyResponse> technologies,
+            List<ProjectMediaResponse> media
     ) {
         this.id = id;
         this.title = title;
@@ -36,35 +40,34 @@ public class ProjectResponse {
         this.links = links;
         this.createdAt = createdAt;
         this.technologies = technologies;
+        this.media = media;
     }
-
 
     public Long getId() {
         return id;
     }
 
-
     public String getTitle() {
         return title;
     }
-
 
     public String getDescription() {
         return description;
     }
 
-
     public List<ProjectLinkResponse> getLinks() {
         return links;
     }
-
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-
     public List<TechnologyResponse> getTechnologies() {
         return technologies;
+    }
+
+    public List<ProjectMediaResponse> getMedia() {
+        return media;
     }
 }
