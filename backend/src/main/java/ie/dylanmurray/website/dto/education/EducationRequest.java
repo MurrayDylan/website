@@ -16,6 +16,10 @@ public class EducationRequest {
     @Size(max = 200, message = "Qualification cannot exceed 200 characters")
     private String qualification;
 
+    @NotBlank(message = "Location cannot be empty")
+    @Size(max = 200, message = "Location cannot exceed 200 characters")
+    private String location;
+
     private String fieldOfStudy;
     private LocalDate startDate;
     private LocalDate endDate;
@@ -32,6 +36,10 @@ public class EducationRequest {
     // Getters
     public String getInstitution() {
         return institution;
+    }
+
+    public String getLocation() {
+        return location;
     }
 
     public String getQualification() {
@@ -73,6 +81,10 @@ public class EducationRequest {
     // Setters
     public void setInstitution(String institution) {
         this.institution = institution;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
     }
 
     public void setQualification(String qualification) {

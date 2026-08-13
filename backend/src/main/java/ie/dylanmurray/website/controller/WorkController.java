@@ -1,5 +1,6 @@
 package ie.dylanmurray.website.controller;
 
+import ie.dylanmurray.website.dto.reorder.ReorderRequest;
 import ie.dylanmurray.website.dto.work.WorkRequest;
 import ie.dylanmurray.website.dto.work.WorkResponse;
 import ie.dylanmurray.website.service.WorkService;
@@ -74,6 +75,13 @@ public class WorkController {
                 workService.updateWork(id, request)
         );
 
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/reorder")
+    public ResponseEntity<Void> reorderWorkExperience(@Valid @RequestBody ReorderRequest request) {
+        workService.reorderWorkExperiences(request.getIds());
+        return ResponseEntity.noContent().build();
     }
 
 

@@ -77,6 +77,8 @@ public class EducationService {
 
                 request.getInstitution(),
 
+                request.getLocation(),
+
                 request.getQualification(),
 
                 request.getFieldOfStudy(),
@@ -131,6 +133,8 @@ public class EducationService {
 
                 request.getInstitution(),
 
+                request.getLocation(),
+
                 request.getQualification(),
 
                 request.getFieldOfStudy(),
@@ -166,7 +170,16 @@ public class EducationService {
 
     }
 
-
+    @Transactional
+    public void reorderEducation(List<Long> educationIds) {
+        for (int i = 0; i < educationIds.size(); i++) {
+            Long id = educationIds.get(i);
+            Education education = educationRepository.findById(id)
+                    .orElseThrow(() -> new ResourceNotFoundException("Education not found with id: " + id));
+            education.setDisplayOrder(i);
+            educationRepository.save(education);
+        }
+    }
 
     @Transactional
     public void deleteEducation(

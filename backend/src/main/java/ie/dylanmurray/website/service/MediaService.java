@@ -20,6 +20,8 @@ import java.util.UUID;
 @Service
 public class MediaService {
 
+    private static final String CV_STORAGE_KEY = "cv.pdf";
+
     private final MediaRepository mediaRepository;
     private final MediaStorageService mediaStorageService;
     private final MediaMapper mediaMapper;
@@ -34,6 +36,34 @@ public class MediaService {
         this.mediaMapper = mediaMapper;
     }
 
+    @Transactional(readOnly = true)
+    public MediaFile getCvFile() throws IOException {
+        if (!mediaStorageService.exists(CV_STORAGE_KEY)) {
+            throw new ResourceNotFoundException("CV file has not been uploaded yet");
+        }
+
+        Path path = mediaStorageService.getPath(CV_STORAGE_KEY);
+
+        return new MediaFile(
+                path,
+                "Dylan_Murray_CV.pdf",
+                "application/pdf"
+        );
+    }
+
+    public void uploadCv(
+            MultipartFile file
+    ) throws IOException {
+
+        validateFile(file);
+
+        String contentType = file.getContentType();
+        if (contentType != null && !contentType.equalsIgnoreCase("application/pdf")) {
+            throw new IllegalArgumentException("Only PDF files are allowed for CV upload");
+        }
+
+        mediaStorageService.store(file, CV_STORAGE_KEY, true);
+    }
 
     @Transactional(readOnly = true)
     public MediaResponse checkHash(
@@ -47,7 +77,6 @@ public class MediaService {
                 .map(mediaMapper::toResponse)
                 .orElse(null);
     }
-
 
     @Transactional
     public MediaResponse upload(
@@ -67,7 +96,6 @@ public class MediaService {
             );
         }
 
-
         Media existingMedia =
                 mediaRepository
                         .findBySha256Hash(calculatedHash)
@@ -76,7 +104,6 @@ public class MediaService {
         if (existingMedia != null) {
             return mediaMapper.toResponse(existingMedia);
         }
-
 
         String storageFilename =
                 generateStorageFilename(file);
@@ -126,7 +153,6 @@ public class MediaService {
         }
     }
 
-
     @Transactional(readOnly = true)
     public MediaFile getFile(
             Long id
@@ -159,7 +185,6 @@ public class MediaService {
         );
     }
 
-
     @Transactional(readOnly = true)
     public Media getMedia(
             Long id
@@ -174,7 +199,6 @@ public class MediaService {
                 );
     }
 
-
     @Transactional(readOnly = true)
     public Path getMediaPath(
             Long id
@@ -188,7 +212,6 @@ public class MediaService {
         );
     }
 
-
     @Transactional
     public void deleteMedia(
             Long id
@@ -200,24 +223,11 @@ public class MediaService {
         String storageFilename =
                 media.getStorageFilename();
 
-        /*
-         * Delete the physical file first.
-         *
-         * If this fails, the database record remains so that
-         * the operation can be retried.
-         */
         mediaStorageService.delete(
                 storageFilename
         );
-
-        /*
-         * The database's ON DELETE RESTRICT constraints are
-         * responsible for preventing deletion while the media
-         * is still attached to another entity.
-         */
         mediaRepository.delete(media);
     }
-
 
     private String calculateSha256(
             MultipartFile file
@@ -260,7 +270,6 @@ public class MediaService {
         }
     }
 
-
     private String determineContentType(
             MultipartFile file
     ) {
@@ -276,7 +285,6 @@ public class MediaService {
 
         return contentType;
     }
-
 
     private String generateStorageFilename(
             MultipartFile file
@@ -303,7 +311,6 @@ public class MediaService {
         return UUID.randomUUID() + extension;
     }
 
-
     private void validateFile(
             MultipartFile file
     ) {
@@ -320,7 +327,6 @@ public class MediaService {
             );
         }
     }
-
 
     private void validateHash(
             String sha256Hash

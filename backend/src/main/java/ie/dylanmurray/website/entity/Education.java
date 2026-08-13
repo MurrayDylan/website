@@ -43,6 +43,9 @@ public class Education {
 
     private String grade;
 
+    @Column(nullable = false, length = 255)
+    private String location;
+
 
     @Column(columnDefinition = "TEXT")
     private String description;
@@ -68,6 +71,7 @@ public class Education {
 
     public Education(
             String institution,
+            String location,
             String qualification,
             String fieldOfStudy,
             LocalDate startDate,
@@ -78,6 +82,7 @@ public class Education {
             Integer displayOrder
     ) {
         this.institution = institution;
+        this.location = location;
         this.qualification = qualification;
         this.fieldOfStudy = fieldOfStudy;
         this.startDate = startDate;
@@ -106,6 +111,10 @@ public class Education {
 
     public String getFieldOfStudy() {
         return fieldOfStudy;
+    }
+
+    public String getLocation(){
+            return location;
     }
 
 
@@ -154,6 +163,7 @@ public class Education {
 
     public void update(
             String institution,
+            String location,
             String qualification,
             String fieldOfStudy,
             LocalDate startDate,
@@ -165,6 +175,7 @@ public class Education {
     ) {
 
         this.institution = institution;
+        this.location = location;
         this.qualification = qualification;
         this.fieldOfStudy = fieldOfStudy;
         this.startDate = startDate;
@@ -176,4 +187,7 @@ public class Education {
 
     }
 
+    public void setDisplayOrder(int displayOrder) {
+        this.displayOrder = displayOrder;
+    }
 }

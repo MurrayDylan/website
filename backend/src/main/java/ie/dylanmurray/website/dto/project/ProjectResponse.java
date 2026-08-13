@@ -1,6 +1,5 @@
 package ie.dylanmurray.website.dto.project;
 
-import ie.dylanmurray.website.dto.media.MediaResponse;
 import ie.dylanmurray.website.dto.projectmedia.ProjectMediaResponse;
 import ie.dylanmurray.website.dto.projectlink.ProjectLinkResponse;
 import ie.dylanmurray.website.dto.technology.TechnologyResponse;
@@ -16,6 +15,8 @@ public class ProjectResponse {
 
     private String description;
 
+    private Integer displayOrder;
+
     private List<ProjectLinkResponse> links;
 
     private LocalDateTime createdAt;
@@ -24,11 +25,11 @@ public class ProjectResponse {
 
     private List<ProjectMediaResponse> media;
 
-
     public ProjectResponse(
             Long id,
             String title,
             String description,
+            Integer displayOrder,
             List<ProjectLinkResponse> links,
             LocalDateTime createdAt,
             List<TechnologyResponse> technologies,
@@ -37,6 +38,7 @@ public class ProjectResponse {
         this.id = id;
         this.title = title;
         this.description = description;
+        this.displayOrder = displayOrder;
         this.links = links;
         this.createdAt = createdAt;
         this.technologies = technologies;
@@ -53,6 +55,10 @@ public class ProjectResponse {
 
     public String getDescription() {
         return description;
+    }
+
+    public Integer getDisplayOrder() {
+        return displayOrder;
     }
 
     public List<ProjectLinkResponse> getLinks() {

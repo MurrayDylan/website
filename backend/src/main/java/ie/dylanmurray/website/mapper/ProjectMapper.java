@@ -29,6 +29,7 @@ public class ProjectMapper {
                 project.getId(),
                 project.getTitle(),
                 project.getDescription(),
+                project.getDisplayOrder(),
 
                 project.getLinks()
                         .stream()

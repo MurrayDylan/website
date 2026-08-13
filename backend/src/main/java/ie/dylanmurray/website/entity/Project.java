@@ -41,6 +41,9 @@ public class Project {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    @Column(name = "display_order", nullable = false)
+    private Integer displayOrder = 0;
+
     @ManyToMany
     @JoinTable(
             name = "project_technologies",
@@ -89,6 +92,14 @@ public class Project {
         return technologies;
     }
 
+    public Integer getDisplayOrder() {
+        return displayOrder;
+    }
+
+    public void setDisplayOrder(Integer displayOrder) {
+        this.displayOrder = displayOrder;
+    }
+
     public void addLink(ProjectLink link) {
         links.add(link);
         link.setProject(this);
@@ -116,10 +127,12 @@ public class Project {
 
     public void update(
             String title,
-            String description
+            String description,
+            Integer displayOrder
     ) {
         this.title = title;
         this.description = description;
+        this.displayOrder = displayOrder;
     }
 
     public void replaceTechnologies(

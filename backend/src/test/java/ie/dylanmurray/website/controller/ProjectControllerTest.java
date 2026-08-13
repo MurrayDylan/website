@@ -1,7 +1,6 @@
 package ie.dylanmurray.website.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import ie.dylanmurray.website.controller.ProjectController;
 import ie.dylanmurray.website.dto.project.ProjectRequest;
 import ie.dylanmurray.website.dto.project.ProjectResponse;
 import ie.dylanmurray.website.dto.projectlink.ProjectLinkRequest;
@@ -9,7 +8,6 @@ import ie.dylanmurray.website.service.ProjectService;
 
 import org.junit.jupiter.api.Test;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
@@ -69,6 +67,7 @@ class ProjectControllerTest {
                 new ProjectRequest(
                         "Portfolio",
                         "My website",
+                        0,
                         List.of(
                                 new ProjectLinkRequest(
                                         "GitHub",
@@ -83,6 +82,7 @@ class ProjectControllerTest {
                         1L,
                         "Portfolio",
                         "My website",
+                        0,
                         List.of(),
                         null,
                         List.of(),
@@ -120,6 +120,7 @@ class ProjectControllerTest {
                 new ProjectRequest(
                         "Portfolio",
                         "My website",
+                        0,
                         List.of(
                                 new ProjectLinkRequest(
                                         "GitHub",
@@ -155,6 +156,7 @@ class ProjectControllerTest {
                 new ProjectRequest(
                         "Portfolio",
                         "My website",
+                        0,
                         List.of(
                                 new ProjectLinkRequest(
                                         "GitHub",
@@ -190,6 +192,7 @@ class ProjectControllerTest {
                 new ProjectRequest(
                         "",
                         "Description",
+                        0,
                         List.of(
                                 new ProjectLinkRequest(
                                         "GitHub",
@@ -225,6 +228,7 @@ class ProjectControllerTest {
                 new ProjectRequest(
                         "Portfolio",
                         "My website",
+                        0,
                         List.of(
                                 new ProjectLinkRequest(
                                         "GitHub",
@@ -239,6 +243,7 @@ class ProjectControllerTest {
                         1L,
                         "Portfolio",
                         "My website",
+                        0,
                         List.of(),
                         null,
                         List.of(),

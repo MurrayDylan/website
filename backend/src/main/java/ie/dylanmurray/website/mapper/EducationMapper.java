@@ -20,6 +20,8 @@ public class EducationMapper {
 
                 education.getInstitution(),
 
+                education.getLocation(),
+
                 education.getQualification(),
 
                 education.getFieldOfStudy(),

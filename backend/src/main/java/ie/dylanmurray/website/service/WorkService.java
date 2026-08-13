@@ -119,6 +119,16 @@ public class WorkService {
         return workMapper.toResponse(savedWork);
     }
 
+    @Transactional
+    public void reorderWorkExperiences(List<Long> workIds) {
+        for (int i = 0; i < workIds.size(); i++) {
+            Long id = workIds.get(i);
+            Work workExperience = workRepository.findById(id)
+                    .orElseThrow(() -> new ResourceNotFoundException("Work experience not found with id: " + id));
+            workExperience.setDisplayOrder(i);
+            workRepository.save(workExperience);
+        }
+    }
 
     @Transactional
     public void deleteWork(Long id) {

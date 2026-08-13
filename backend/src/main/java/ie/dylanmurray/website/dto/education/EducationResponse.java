@@ -10,6 +10,8 @@ public class EducationResponse {
 
     private String institution;
 
+    private String location;
+
     private String qualification;
 
     private String fieldOfStudy;
@@ -32,6 +34,7 @@ public class EducationResponse {
     public EducationResponse(
             Long id,
             String institution,
+            String location,
             String qualification,
             String fieldOfStudy,
             LocalDate startDate,
@@ -44,6 +47,7 @@ public class EducationResponse {
     ) {
         this.id = id;
         this.institution = institution;
+        this.location = location;
         this.qualification = qualification;
         this.fieldOfStudy = fieldOfStudy;
         this.startDate = startDate;
@@ -62,6 +66,10 @@ public class EducationResponse {
 
     public String getInstitution() {
         return institution;
+    }
+
+    public String getLocation() {
+        return location;
     }
 
     public String getQualification() {

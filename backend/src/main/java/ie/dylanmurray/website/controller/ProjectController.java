@@ -2,6 +2,7 @@ package ie.dylanmurray.website.controller;
 
 import ie.dylanmurray.website.dto.project.ProjectRequest;
 import ie.dylanmurray.website.dto.project.ProjectResponse;
+import ie.dylanmurray.website.dto.reorder.ReorderRequest;
 import ie.dylanmurray.website.service.ProjectService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -63,6 +64,13 @@ public class ProjectController {
         return ResponseEntity.ok(
                 projectService.updateProject(id, request)
         );
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/reorder")
+    public ResponseEntity<Void> reorderProjects(@Valid @RequestBody ReorderRequest request) {
+        projectService.reorderProjects(request.getIds());
+        return ResponseEntity.noContent().build();
     }
 
     @PreAuthorize("hasRole('ADMIN')")

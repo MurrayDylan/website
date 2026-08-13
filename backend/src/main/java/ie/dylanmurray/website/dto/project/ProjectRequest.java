@@ -18,6 +18,8 @@ public class ProjectRequest {
     @Size(max = 3000, message = "Description cannot exceed 3000 characters")
     private String description;
 
+    private Integer displayOrder;
+
     @Valid
     private List<ProjectLinkRequest> links = new ArrayList<>();
 
@@ -29,11 +31,13 @@ public class ProjectRequest {
     public ProjectRequest(
             String title,
             String description,
+            Integer displayOrder,
             List<ProjectLinkRequest> links,
             List<String> technologies
     ) {
         this.title = title;
         this.description = description;
+        this.displayOrder = displayOrder;
         this.links = links;
         this.technologies = technologies;
     }
@@ -44,6 +48,10 @@ public class ProjectRequest {
 
     public String getDescription() {
         return description;
+    }
+
+    public Integer getDisplayOrder() {
+        return displayOrder;
     }
 
     public List<ProjectLinkRequest> getLinks() {

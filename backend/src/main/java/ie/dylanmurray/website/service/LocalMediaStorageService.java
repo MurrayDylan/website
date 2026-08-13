@@ -9,7 +9,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
+import java.nio.file.StandardCopyOption;
 
 @Service
 public class LocalMediaStorageService implements MediaStorageService {
@@ -40,6 +40,15 @@ public class LocalMediaStorageService implements MediaStorageService {
             MultipartFile file,
             String storageKey
     ) throws IOException {
+        return store(file, storageKey, false);
+    }
+
+    @Override
+    public String store(
+            MultipartFile file,
+            String storageKey,
+            boolean replaceExisting
+    ) throws IOException {
 
         Path target = resolveStorageKey(storageKey);
 
@@ -50,15 +59,22 @@ public class LocalMediaStorageService implements MediaStorageService {
         }
 
         try (InputStream inputStream = file.getInputStream()) {
-            Files.copy(
-                    inputStream,
-                    target
-            );
+            if (replaceExisting) {
+                Files.copy(
+                        inputStream,
+                        target,
+                        StandardCopyOption.REPLACE_EXISTING
+                );
+            } else {
+                Files.copy(
+                        inputStream,
+                        target
+                );
+            }
         }
 
         return storageKey;
     }
-
 
     @Override
     public InputStream load(
@@ -97,7 +113,6 @@ public class LocalMediaStorageService implements MediaStorageService {
 
         return resolveStorageKey(storageKey);
     }
-
 
     private Path resolveStorageKey(
             String storageKey

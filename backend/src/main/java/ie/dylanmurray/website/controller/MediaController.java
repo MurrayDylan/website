@@ -27,6 +27,35 @@ public class MediaController {
         this.mediaService = mediaService;
     }
 
+    @GetMapping("/cv")
+    public ResponseEntity<Resource> downloadCv() throws IOException {
+        MediaService.MediaFile cvFile = mediaService.getCvFile();
+        Resource resource = new FileSystemResource(cvFile.path());
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(cvFile.contentType()))
+                .contentLength(resource.contentLength())
+                .header(HttpHeaders.CACHE_CONTROL, "no-cache, must-revalidate")
+                .header(
+                        HttpHeaders.CONTENT_DISPOSITION,
+                        ContentDisposition.inline() // <-- CHANGE THIS TO INLINE
+                                .filename(cvFile.originalFilename())
+                                .build()
+                                .toString()
+                )
+                .body(resource);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping(value = "/cv", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Void> uploadCv(
+            @RequestParam("file") MultipartFile file
+    ) throws IOException {
+
+        mediaService.uploadCv(file);
+        return ResponseEntity.ok().build();
+    }
+
     @GetMapping("/hash/{sha256Hash}")
     public ResponseEntity<MediaResponse> checkHash(
             @PathVariable String sha256Hash

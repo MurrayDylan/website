@@ -12,7 +12,6 @@ import ie.dylanmurray.website.repository.ProjectRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -65,6 +64,12 @@ public class ProjectService {
                 request.getDescription()
         );
 
+        Integer order = request.getDisplayOrder();
+        if (order == null) {
+            order = (int) projectRepository.count();
+        }
+        project.setDisplayOrder(order);
+
         // Add technologies
         for (String technologyName : request.getTechnologies()) {
 
@@ -104,10 +109,14 @@ public class ProjectService {
                                 "Project not found with id: " + id
                         ));
 
-        // Update basic project information
+        Integer orderToUse = request.getDisplayOrder() != null
+                ? request.getDisplayOrder()
+                : project.getDisplayOrder();
+
         project.update(
                 request.getTitle(),
-                request.getDescription()
+                request.getDescription(),
+                orderToUse
         );
 
         // Replace technologies
@@ -138,6 +147,17 @@ public class ProjectService {
         }
 
         return projectMapper.toResponse(project);
+    }
+
+    @Transactional
+    public void reorderProjects(List<Long> projectIds) {
+        for (int i = 0; i < projectIds.size(); i++) {
+            Long id = projectIds.get(i);
+            Project project = projectRepository.findById(id)
+                    .orElseThrow(() -> new ResourceNotFoundException("Project not found with id: " + id));
+            project.setDisplayOrder(i);
+            projectRepository.save(project);
+        }
     }
 
     @Transactional

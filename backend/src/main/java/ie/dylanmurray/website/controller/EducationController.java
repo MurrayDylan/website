@@ -2,6 +2,7 @@ package ie.dylanmurray.website.controller;
 
 
 import ie.dylanmurray.website.dto.education.*;
+import ie.dylanmurray.website.dto.reorder.ReorderRequest;
 import ie.dylanmurray.website.service.EducationService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -62,6 +63,13 @@ public class EducationController {
             @Valid @RequestBody EducationRequest request
     ) {
         return ResponseEntity.ok(educationService.updateEducation(id, request));
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/reorder")
+    public ResponseEntity<Void> reorderEducation(@Valid @RequestBody ReorderRequest request) {
+        educationService.reorderEducation(request.getIds());
+        return ResponseEntity.noContent().build();
     }
 
     @PreAuthorize("hasRole('ADMIN')")

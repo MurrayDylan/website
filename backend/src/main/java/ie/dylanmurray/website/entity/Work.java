@@ -225,4 +225,8 @@ public class Work {
             tech.getWorkExperience().add(this);
         }
     }
+
+    public void setDisplayOrder(int displayOrder) {
+        this.displayOrder = displayOrder;
+    }
 }

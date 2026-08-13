@@ -51,12 +51,14 @@ class ProjectServiceTest {
                         "Portfolio",
                         "My website"
                 );
+        project.setDisplayOrder(0);
 
         ProjectResponse response =
                 new ProjectResponse(
                         1L,
                         "Portfolio",
                         "My website",
+                        0,
                         List.of(),
                         null,
                         List.of(),
@@ -119,6 +121,7 @@ class ProjectServiceTest {
                 new ProjectRequest(
                         "Portfolio",
                         "Website project",
+                        0,
                         List.of(
                                 new ProjectLinkRequest(
                                         "GitHub",
@@ -142,6 +145,7 @@ class ProjectServiceTest {
                         1L,
                         "Portfolio",
                         "My website",
+                        0,
                         List.of(),
                         null,
                         List.of(),
@@ -191,6 +195,7 @@ class ProjectServiceTest {
                 new ProjectRequest(
                         "Portfolio",
                         "Website project",
+                        0,
                         List.of(
                                 new ProjectLinkRequest(
                                         "GitHub",
@@ -211,6 +216,7 @@ class ProjectServiceTest {
                         1L,
                         "Portfolio",
                         "My website",
+                        0,
                         List.of(),
                         null,
                         List.of(),
