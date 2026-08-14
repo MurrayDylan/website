@@ -14,7 +14,7 @@ const navItems = [
   { label: "Skills", path: "/skills" },
   { label: "Contact Me", path: "/contact" },
   { label: "Masters Dissertation", path: "/dissertation" },
-  { label: "About This Website", path: "/about-this-website" },
+  //{ label: "About This Website", path: "/about-this-website" },
 ];
 
 interface SidebarProps {
