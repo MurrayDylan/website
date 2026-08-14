@@ -3,6 +3,7 @@ package ie.dylanmurray.website.security;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -15,8 +16,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import org.springframework.http.HttpStatus;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 
 import java.util.List;
@@ -54,27 +53,57 @@ public class SecurityConfig {
                 )
 
                 .authorizeHttpRequests(auth -> auth
-                        // Authentication endpoints are public
+
                         .requestMatchers("/api/auth/**").permitAll()
 
-                        // Swagger/OpenAPI
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
                         .requestMatchers(
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**"
                         ).permitAll()
 
-                        // Spring error endpoint
                         .requestMatchers("/error").permitAll()
 
-                        // Public portfolio data
-                        .requestMatchers(HttpMethod.GET, "/api/projects/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/technologies/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/education/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/work/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/pages/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/media/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/layout-templates/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/settings").permitAll()
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/api/projects/**"
+                        ).permitAll()
+
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/api/technologies/**"
+                        ).permitAll()
+
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/api/education/**"
+                        ).permitAll()
+
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/api/work/**"
+                        ).permitAll()
+
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/api/pages/**"
+                        ).permitAll()
+
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/api/media/**"
+                        ).permitAll()
+
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/api/layout-templates/**"
+                        ).permitAll()
+
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/api/settings"
+                        ).permitAll()
 
                         // Everything else requires authentication
                         .anyRequest().authenticated()
@@ -98,13 +127,19 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
 
         CorsConfiguration config = new CorsConfiguration();
-
+        
         config.setAllowedOrigins(
                 List.of("http://localhost:5173")
         );
 
         config.setAllowedMethods(
-                List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                List.of(
+                        "GET",
+                        "POST",
+                        "PUT",
+                        "DELETE",
+                        "OPTIONS"
+                )
         );
 
         config.setAllowedHeaders(
@@ -116,7 +151,10 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source =
                 new UrlBasedCorsConfigurationSource();
 
-        source.registerCorsConfiguration("/api/**", config);
+        source.registerCorsConfiguration(
+                "/api/**",
+                config
+        );
 
         return source;
     }

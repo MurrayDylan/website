@@ -1,3 +1,5 @@
+.env
+
 # Prerequisites
 *.class
 
@@ -35,3 +37,5 @@ out/
 
 #Node Modules
 **/node_modules/
+
+/screenshots
