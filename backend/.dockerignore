@@ -1,0 +1,7 @@
+target/
+media-storage/
+.env
+.git/
+.gitignore
+.idea/
+*.iml
