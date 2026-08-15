@@ -35,21 +35,21 @@ services:
     networks:
       - website-network
 
-frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    container_name: website-frontend
-    restart: unless-stopped
-    depends_on:
-      - backend
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./certs:/etc/nginx/certs:ro
-    networks:
-      - website-network
+  frontend:
+      build:
+        context: ./frontend
+        dockerfile: Dockerfile
+      container_name: website-frontend
+      restart: unless-stopped
+      depends_on:
+        - backend
+      ports:
+        - "80:80"
+        - "443:443"
+      volumes:
+        - ./certs:/etc/nginx/certs:ro
+      networks:
+        - website-network
 
 volumes:
   postgres-data:
