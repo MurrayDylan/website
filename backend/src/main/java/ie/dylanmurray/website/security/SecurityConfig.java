@@ -129,7 +129,10 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
         
         config.setAllowedOrigins(
-                List.of("http://localhost:5173")
+                List.of(
+                        "https://dylanmurray.dev",
+                        "http://localhost:5173"
+                )
         );
 
         config.setAllowedMethods(
@@ -152,7 +155,7 @@ public class SecurityConfig {
                 new UrlBasedCorsConfigurationSource();
 
         source.registerCorsConfiguration(
-                "/api/**",
+                "/**",
                 config
         );
 
