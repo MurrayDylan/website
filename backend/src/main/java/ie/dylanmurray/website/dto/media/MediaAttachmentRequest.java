@@ -1,17 +1,19 @@
 package ie.dylanmurray.website.dto.media;
 
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
 
 public record MediaAttachmentRequest(
 
         @NotNull
-        @Min(0)
+        @PositiveOrZero
         Integer displayOrder,
 
         String caption,
 
-        String altText
+        String altText,
+
+        Boolean isHorizontal
 
 ) {
 }

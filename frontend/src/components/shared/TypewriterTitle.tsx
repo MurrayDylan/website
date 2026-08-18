@@ -1,7 +1,12 @@
 import { useTypewriter } from "../../hooks/useTypewriter";
 
-export default function TypewriterTitle({ text }: { text: string }) {
-  // Replace every "/" with "/" followed by a zero-width space (\u200B)
+interface TypewriterTitleProps {
+  text: string;
+}
+
+export default function TypewriterTitle({
+  text,
+}: TypewriterTitleProps) {
   const formattedText = text.replace(/\//g, "/\u200B");
   const displayText = useTypewriter(formattedText);
 

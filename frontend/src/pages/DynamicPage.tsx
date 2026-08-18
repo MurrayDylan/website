@@ -12,7 +12,7 @@ import ContactLayout from "../components/pagelayout/ContactLayout";
 import StandardLayout from "../components/pagelayout/StandardLayout";
 import AboutThisWebsiteLayout from "../components/pagelayout/AboutThisWebsite";
 import SkillsLayout from "../components/pagelayout/SkillsLayout";
-import ModularLayout from "../components/pagelayout/ModularLayout"; // ADDED THIS IMPORT
+import ModularLayout from "../components/pagelayout/ModularLayout";
 
 interface DynamicPageProps {
   forcedSlug?: string;
@@ -49,7 +49,7 @@ export default function DynamicPage({ forcedSlug }: DynamicPageProps) {
 
   if (loading) {
     return (
-      <div className="flex-1 flex items-center justify-center text-neutral-500 text-sm">
+      <div className="flex-1 flex items-center justify-center text-neutral-500 text-base">
         Loading page…
       </div>
     );
@@ -57,48 +57,47 @@ export default function DynamicPage({ forcedSlug }: DynamicPageProps) {
 
   if (error || !page) {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center text-neutral-400 gap-2">
-        <p className="text-lg font-medium text-white">404 - Page Not Found</p>
-        <p className="text-sm text-neutral-500">
+      <div className="flex-1 flex flex-col items-center justify-center text-neutral-400 gap-3">
+        <p className="text-xl font-medium text-white">404 - Page Not Found</p>
+        <p className="text-base text-neutral-500">
           The requested page "{slug}" could not be loaded.
         </p>
       </div>
     );
   }
 
-  // Determine the layout component to render
   let layoutContent;
-  
+
   switch (page.layoutType) {
-  case "MODULAR":
-    layoutContent = <ModularLayout page={page} />;
-    break;
+    case "MODULAR":
+      layoutContent = <ModularLayout page={page} />;
+      break;
 
-  case "DISSERTATION":
-    layoutContent = <DissertationLayout page={page} />;
-    break;
+    case "DISSERTATION":
+      layoutContent = <DissertationLayout page={page} />;
+      break;
 
-  case "ABOUT":
-    layoutContent = <AboutLayout page={page} />;
-    break;
+    case "ABOUT":
+      layoutContent = <AboutLayout page={page} />;
+      break;
 
-  case "CONTACT":
-    layoutContent = <ContactLayout page={page} />;
-    break;
+    case "CONTACT":
+      layoutContent = <ContactLayout page={page} />;
+      break;
 
-  case "ABOUT-THIS-WEBSITE":
-    layoutContent = <AboutThisWebsiteLayout page={page} />;
-    break;
+    case "ABOUT-THIS-WEBSITE":
+      layoutContent = <AboutThisWebsiteLayout page={page} />;
+      break;
 
-  case "SKILLS":
-    layoutContent = <SkillsLayout page={page} />;
-    break;
+    case "SKILLS":
+      layoutContent = <SkillsLayout page={page} />;
+      break;
 
-  case "STANDARD":
-  default:
-    layoutContent = <StandardLayout page={page} />;
-    break;
-}
+    case "STANDARD":
+    default:
+      layoutContent = <StandardLayout page={page} />;
+      break;
+  }
 
   return (
     <motion.div

@@ -38,16 +38,6 @@ interface PageFormProps {
   isSubmitting?: boolean;
 }
 
-function mergeMetadata(
-  templateMetadata: Record<string, any> | null | undefined,
-  pageMetadata: Record<string, any> | null | undefined
-): Record<string, any> {
-  return {
-    ...(templateMetadata ?? {}),
-    ...(pageMetadata ?? {}),
-  };
-}
-
 export default function PageForm({
   initialData,
   onSubmit,
@@ -55,10 +45,6 @@ export default function PageForm({
   isSubmitting = false,
 }: PageFormProps) {
   const { token } = useAuth();
-
-  // -----------------------------------------------------------------------
-  // Basic page state
-  // -----------------------------------------------------------------------
 
   const [slug, setSlug] = useState(
     initialData?.slug ?? ""
@@ -80,10 +66,6 @@ export default function PageForm({
     initialData?.content ?? ""
   );
 
-  // -----------------------------------------------------------------------
-  // Layout template state
-  // -----------------------------------------------------------------------
-
   const [templates, setTemplates] = useState<
     LayoutTemplateResponse[]
   >([]);
@@ -100,16 +82,11 @@ export default function PageForm({
   const [templateError, setTemplateError] =
     useState<string | null>(null);
 
-  // -----------------------------------------------------------------------
-  // Metadata
-  // -----------------------------------------------------------------------
-
   const [metadata, setMetadata] =
     useState<PageMetadata>({});
 
-  // -----------------------------------------------------------------------
-  // Media
-  // -----------------------------------------------------------------------
+  const [layoutChanged, setLayoutChanged] =
+    useState(false);
 
   const [mediaItems, setMediaItems] =
     useState<StagedMediaItem[]>(() => {
@@ -130,6 +107,8 @@ export default function PageForm({
             pageMedia.altText ?? undefined,
           viewUrl:
             pageMedia.media.viewUrl,
+          isHorizontal:
+            pageMedia.isHorizontal ?? false,
         })) ?? []
       );
     });
@@ -137,19 +116,40 @@ export default function PageForm({
   const [isMediaUploading, setIsMediaUploading] =
     useState(false);
 
-  // -----------------------------------------------------------------------
-  // Form errors
-  // -----------------------------------------------------------------------
-
   const [error, setError] =
     useState<string | null>(null);
 
-  // -----------------------------------------------------------------------
-  // Load all available layout templates
-  //
-  // This runs once when the form is mounted. The result is used to populate
-  // the Layout select rather than maintaining a hard-coded list of layouts.
-  // -----------------------------------------------------------------------
+  useEffect(() => {
+    if (!initialData) {
+      return;
+    }
+
+    setSlug(initialData.slug ?? "");
+    setTitle(initialData.title ?? "");
+    setSubtitle(initialData.subtitle ?? "");
+    setLayoutType(initialData.layoutType ?? "STANDARD");
+    setContent(initialData.content ?? "");
+
+    setMetadata(
+      initialData.metadata ?? {}
+    );
+
+    setLayoutChanged(false);
+
+    setMediaItems(
+      initialData.media?.map((pageMedia) => ({
+        mediaId: pageMedia.media.id,
+        originalFilename: pageMedia.media.originalFilename,
+        contentType: pageMedia.media.contentType,
+        fileSize: pageMedia.media.fileSize,
+        displayOrder: pageMedia.displayOrder,
+        caption: pageMedia.caption ?? undefined,
+        altText: pageMedia.altText ?? undefined,
+        viewUrl: pageMedia.media.viewUrl,
+        isHorizontal: pageMedia.isHorizontal ?? false,
+      })) ?? []
+    );
+  }, [initialData]);
 
   useEffect(() => {
     let cancelled = false;
@@ -189,22 +189,19 @@ export default function PageForm({
     };
   }, []);
 
-  // -----------------------------------------------------------------------
-  // Load metadata for the currently selected layout
-  // -----------------------------------------------------------------------
-
   useEffect(() => {
-    if (layoutType === "MODULAR") {
-      setTemplate(null);
-
-      setMetadata(
-        initialData?.metadata ?? {}
-      );
-
+    if (loadingTemplates) {
       return;
     }
 
-    if (loadingTemplates) {
+    if (layoutType === "MODULAR") {
+      setTemplate(null);
+
+      if (layoutChanged) {
+        setMetadata({});
+      }
+
+      setLoadingTemplate(false);
       return;
     }
 
@@ -219,25 +216,21 @@ export default function PageForm({
 
     setTemplate(matchingTemplate);
 
-    const mergedMetadata =
-      mergeMetadata(
-        matchingTemplate?.defaultMetadata,
-        initialData?.metadata
+    if (layoutChanged) {
+      setMetadata(
+        structuredClone(
+          matchingTemplate?.defaultMetadata ?? {}
+        )
       );
-
-    setMetadata(mergedMetadata);
+    }
 
     setLoadingTemplate(false);
   }, [
     layoutType,
     templates,
-    initialData,
     loadingTemplates,
+    layoutChanged,
   ]);
-
-  // -----------------------------------------------------------------------
-  // Form submission
-  // -----------------------------------------------------------------------
 
   async function handleSubmit(
     event: FormEvent
@@ -259,19 +252,13 @@ export default function PageForm({
     try {
       const data: PageRequest = {
         slug: slug.trim(),
-
         title: title.trim(),
-
         subtitle:
           subtitle.trim() || null,
-
         layoutType,
-
         content:
           content.trim() || null,
-
         metadata,
-
         blocks:
           layoutType === "MODULAR"
             ? Array.isArray(metadata.blocks)
@@ -293,10 +280,6 @@ export default function PageForm({
     }
   }
 
-  // -----------------------------------------------------------------------
-  // Render
-  // -----------------------------------------------------------------------
-
   return (
     <form
       onSubmit={handleSubmit}
@@ -307,10 +290,6 @@ export default function PageForm({
           {error}
         </div>
       )}
-
-      {/* --------------------------------------------------------------- */}
-      {/* Basic page information                                          */}
-      {/* --------------------------------------------------------------- */}
 
       <section className="flex flex-col gap-4">
         <div>
@@ -372,10 +351,6 @@ export default function PageForm({
           />
         </label>
 
-        {/* ------------------------------------------------------------- */}
-        {/* Layout                                                        */}
-        {/* ------------------------------------------------------------- */}
-
         <label className="flex flex-col gap-1 text-sm">
           <span className="text-neutral-300">
             Layout
@@ -383,9 +358,10 @@ export default function PageForm({
 
           <select
             value={layoutType}
-            onChange={(e) =>
-              setLayoutType(e.target.value)
-            }
+            onChange={(e) => {
+              setLayoutChanged(true);
+              setLayoutType(e.target.value);
+            }}
             disabled={loadingTemplates}
             className="rounded-md border border-neutral-700 bg-neutral-800 px-3 py-2 text-white disabled:opacity-50"
           >
@@ -425,10 +401,6 @@ export default function PageForm({
         </label>
       </section>
 
-      {/* --------------------------------------------------------------- */}
-      {/* Content                                                         */}
-      {/* --------------------------------------------------------------- */}
-
       <section className="flex flex-col gap-3">
         <div>
           <h2 className="text-sm font-semibold text-white">
@@ -451,10 +423,6 @@ export default function PageForm({
           placeholder="Write page content using Markdown..."
         />
       </section>
-
-      {/* --------------------------------------------------------------- */}
-      {/* Metadata / Modular Blocks                                       */}
-      {/* --------------------------------------------------------------- */}
 
       <section className="flex flex-col gap-3">
         <div>
@@ -503,10 +471,6 @@ export default function PageForm({
         )}
       </section>
 
-      {/* --------------------------------------------------------------- */}
-      {/* Media                                                           */}
-      {/* --------------------------------------------------------------- */}
-
       {token && (
         <section className="flex flex-col gap-3">
           <div>
@@ -530,10 +494,6 @@ export default function PageForm({
           />
         </section>
       )}
-
-      {/* --------------------------------------------------------------- */}
-      {/* Submit                                                          */}
-      {/* --------------------------------------------------------------- */}
 
       <button
         type="submit"

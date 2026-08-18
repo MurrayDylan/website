@@ -12,6 +12,8 @@ public record WorkMediaResponse(
 
         String altText,
 
+        Boolean isHorizontal,
+
         MediaResponse media
 
 ) {

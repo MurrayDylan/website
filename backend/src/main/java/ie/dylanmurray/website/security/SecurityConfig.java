@@ -1,5 +1,6 @@
 package ie.dylanmurray.website.security;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -26,6 +27,9 @@ import java.util.List;
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+
+    @Value("${app.cors.allowed-origins}")
+    private List<String> allowedOrigins;
 
     public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
@@ -105,7 +109,6 @@ public class SecurityConfig {
                                 "/api/settings"
                         ).permitAll()
 
-                        // Everything else requires authentication
                         .anyRequest().authenticated()
                 )
 
@@ -127,13 +130,8 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
 
         CorsConfiguration config = new CorsConfiguration();
-        
-        config.setAllowedOrigins(
-                List.of(
-                        "https://dylanmurray.dev",
-                        "http://localhost:5173"
-                )
-        );
+
+        config.setAllowedOrigins(allowedOrigins);
 
         config.setAllowedMethods(
                 List.of(

@@ -1,13 +1,20 @@
-import PdfViewer from "./PdfViewer";
+import PdfViewer from "../media/PdfViewer";
+import PptViewer from "../media/PptViewer";
 import ChartCarousel from "../media/ChartCarousel";
 import { type MediaResponse } from "../../api/responseTypes";
 import { resolveMediaUrl } from "../../api/portfolioApi";
+
+const PPT_MIME_TYPES = [
+  "application/vnd.ms-powerpoint",
+  "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+];
 
 interface MediaAttachmentItem {
   id: number | string;
   media: MediaResponse;
   caption?: string;
   altText?: string;
+  isHorizontal?: boolean; // Added to support reading the layout preference
 }
 
 interface MediaViewerProps {
@@ -39,6 +46,18 @@ export default function MediaViewer({ items = [] }: MediaViewerProps) {
         if (item.media.contentType === "application/pdf") {
           return (
             <PdfViewer
+              key={item.id}
+              viewUrl={resolvedViewUrl}
+              downloadUrl={resolvedDownloadUrl}
+              title={item.caption || item.media.originalFilename}
+              isHorizontal={item.isHorizontal} // Passed down to the viewer
+            />
+          );
+        }
+
+        if (PPT_MIME_TYPES.includes(item.media.contentType)) {
+          return (
+            <PptViewer
               key={item.id}
               viewUrl={resolvedViewUrl}
               downloadUrl={resolvedDownloadUrl}

@@ -52,6 +52,7 @@ export default function CreateProjectPage() {
             displayOrder: Number(item.displayOrder) || 0,
             caption: item.caption ?? undefined,
             altText: item.altText ?? undefined,
+            isHorizontal: item.isHorizontal,
           },
           token
         );

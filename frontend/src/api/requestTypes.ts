@@ -48,6 +48,7 @@ export interface MediaAttachmentRequest {
   displayOrder: number;
   caption?: string | null;
   altText?: string | null;
+  isHorizontal?: boolean | null; // Added
 }
 
 export interface ProjectMediaRequest {
@@ -55,6 +56,7 @@ export interface ProjectMediaRequest {
   displayOrder: number;
   caption?: string | null;
   altText?: string | null;
+  isHorizontal?: boolean | null; // Added
 }
 
 export interface PageRequest {

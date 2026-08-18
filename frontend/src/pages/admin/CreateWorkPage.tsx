@@ -7,7 +7,7 @@ import {
   attachMediaToWork,
 } from "../../api/portfolioApi";
 import WorkForm from "../../components/admin/WorkForm";
-import { type WorkExperienceRequest } from "../../api/requestTypes"
+import { type WorkExperienceRequest } from "../../api/requestTypes";
 import { type StagedMediaItem } from "../../components/admin/ProjectMediaEditor";
 
 export default function CreateWorkPage() {
@@ -37,10 +37,8 @@ export default function CreateWorkPage() {
   ) {
     if (!token) return;
 
-    // 1. Create base work experience entry
     const work = await createWorkExperience(data, token);
 
-    // 2. Attach media items from staged basket
     for (const item of mediaItems) {
       if (!item.mediaId) continue;
 
@@ -52,12 +50,11 @@ export default function CreateWorkPage() {
             displayOrder: Number(item.displayOrder) || 0,
             caption: item.caption ?? undefined,
             altText: item.altText ?? undefined,
+            isHorizontal: item.isHorizontal,
           },
           token
         );
-      } catch (err) {
-        // Silently skip duplicate errors
-      }
+      } catch (err) {}
     }
 
     navigate("/admin/work");

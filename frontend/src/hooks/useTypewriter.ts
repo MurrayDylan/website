@@ -15,6 +15,7 @@ export function useTypewriter(targetText: string) {
 
     function deleteStep() {
       if (cancelled) return;
+
       if (current.length > 0) {
         current = current.slice(0, -1);
         setDisplayText(current);
@@ -26,6 +27,7 @@ export function useTypewriter(targetText: string) {
 
     function typeStep() {
       if (cancelled) return;
+
       if (current.length < targetText.length) {
         current = targetText.slice(0, current.length + 1);
         setDisplayText(current);
@@ -39,7 +41,7 @@ export function useTypewriter(targetText: string) {
 
     return () => {
       cancelled = true;
-      previousText.current = targetText; // snap to latest on rapid navigation
+      previousText.current = targetText;
     };
   }, [targetText]);
 

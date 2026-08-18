@@ -3,55 +3,74 @@ import { useLocation } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import ContentPanel from "./ContentPanel";
 
+export type LayoutMode = "desktop" | "mobile";
+
+function getLayoutMode(): LayoutMode {
+  if (typeof window === "undefined") {
+    return "desktop";
+  }
+
+  const aspectRatio = window.innerWidth / window.innerHeight;
+
+  return aspectRatio >= 4 / 5 ? "desktop" : "mobile";
+}
+
 export default function AppShell() {
-  const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   const location = useLocation();
 
-  // Track aspect ratio (e.g., landscape vs portrait/narrow)
-  const [isWideAspect, setIsWideAspect] = useState(() => {
-    if (typeof window === "undefined") return true;
-    return window.innerWidth / window.innerHeight >= 4 / 5;
-  });
+  const [layoutMode, setLayoutMode] = useState<LayoutMode>(
+    getLayoutMode()
+  );
+
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
 
   useEffect(() => {
     const handleResize = () => {
-      const wide = window.innerWidth / window.innerHeight >= 4 / 5;
-      setIsWideAspect(wide);
+      const newLayoutMode = getLayoutMode();
+
+      setLayoutMode((currentMode) => {
+        if (currentMode !== newLayoutMode) {
+          setShowMobileMenu(false);
+        }
+
+        return newLayoutMode;
+      });
     };
 
     window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
   }, []);
 
-  // Reset mobile sidebar view on route change
   useEffect(() => {
-    setShowMobileSidebar(false);
+    setShowMobileMenu(false);
   }, [location.pathname]);
 
+  const isMobile = layoutMode === "mobile";
+
   return (
-    // Changed from p-4 md:p-6 to a consistent p-4 (or p-5) to prevent padding snapping
-    <div className="relative h-screen w-screen bg-[url('/background.jpg')] bg-cover bg-center overflow-hidden p-4 box-border flex">
-      <div className="flex h-full w-full gap-4 relative">
-        
-        {/* Desktop Sidebar */}
-        {isWideAspect && (
+    <div
+      className={`relative h-[100dvh] w-screen bg-[url("/background.jpg")] bg-cover bg-center overflow-hidden box-border flex ${
+        isMobile ? "p-0" : "p-4"
+      }`}
+    >
+      <div className="relative flex h-full w-full gap-5">
+        {!isMobile && (
           <div className="flex h-full shrink-0">
-            <Sidebar className="w-64" />
+            <Sidebar className="w-86" />
           </div>
         )}
 
-        {/* Mobile Sidebar View: Full-screen overlay when toggled on narrow aspect ratios */}
-        {!isWideAspect && showMobileSidebar && (
-          <div className="flex w-full h-full absolute inset-0 z-30 bg-neutral-950/95 backdrop-blur-md">
-            <Sidebar className="w-full" onClose={() => setShowMobileSidebar(false)} />
-          </div>
-        )}
-
-        {/* Content Panel View */}
-        <div className={`flex-1 w-0 min-w-0 h-full flex ${!isWideAspect && showMobileSidebar ? 'hidden' : 'flex'}`}>
-          <ContentPanel onOpenMobileMenu={() => setShowMobileSidebar(true)} />
+        <div className="h-full min-w-0 flex-1 flex">
+          <ContentPanel
+            layoutMode={layoutMode}
+            showMobileMenu={showMobileMenu}
+            onOpenMobileMenu={() => setShowMobileMenu(true)}
+            onCloseMobileMenu={() => setShowMobileMenu(false)}
+          />
         </div>
-
       </div>
     </div>
   );

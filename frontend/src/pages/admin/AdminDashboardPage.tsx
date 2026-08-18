@@ -6,13 +6,20 @@ import { useAuth } from "../../context/AuthContext";
 import { useTitleOverride } from "../../context/TitleContext";
 import Card from "../../components/shared/Card";
 
-// Slugs expected by your primary site navigation
 const CORE_PAGE_SLUGS = [
   { slug: "about", label: "About Me", defaultLayout: "ABOUT" },
-  { slug: "dissertation", label: "Master's Dissertation", defaultLayout: "DISSERTATION" },
+  {
+    slug: "dissertation",
+    label: "Master's Dissertation",
+    defaultLayout: "DISSERTATION",
+  },
   { slug: "skills", label: "Skills", defaultLayout: "SKILLS" },
   { slug: "contact", label: "Contact", defaultLayout: "CONTACT" },
-  { slug: "about-this-website", label: "readme.md (About Site)", defaultLayout: "ABOUT_THIS_SITE" },
+  {
+    slug: "about-this-website",
+    label: "readme.md (About Site)",
+    defaultLayout: "ABOUT_THIS_SITE",
+  },
 ];
 
 const ENTITY_MANAGERS = [
@@ -32,6 +39,11 @@ const ENTITY_MANAGERS = [
     desc: "Manage academic qualifications and course history",
   },
   {
+    label: "Technologies & Skills",
+    path: "/admin/technologies",
+    desc: "Manage skills, names, and categories",
+  },
+  {
     label: "Layout Presets",
     path: "/admin/layout-templates",
     desc: "Configure pre-baked JSON metadata & starter text for layout types",
@@ -47,13 +59,13 @@ export default function AdminHubPage() {
 
   useEffect(() => {
     setTitleOverride("Admin Dashboard");
+
     setHeaderAction(
       <div className="flex items-center gap-4">
         <Link
           to="/admin/settings"
           className="text-sm text-neutral-400 hover:text-white transition flex items-center gap-1.5"
         >
-          {/* Small Cog Icon */}
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
@@ -69,6 +81,7 @@ export default function AdminHubPage() {
           </svg>
           Settings
         </Link>
+
         <button
           onClick={logout}
           className="text-sm text-neutral-400 hover:text-white transition"
@@ -85,6 +98,7 @@ export default function AdminHubPage() {
 
   function loadPages() {
     setLoading(true);
+
     fetchPages()
       .then(setPages)
       .catch(console.error)
@@ -94,39 +108,61 @@ export default function AdminHubPage() {
   async function handleDelete(slug: string) {
     if (
       !token ||
-      !window.confirm(`Are you sure you want to delete the dynamic page "/${slug}"?`)
+      !window.confirm(
+        `Are you sure you want to delete the dynamic page "/${slug}"?`
+      )
     ) {
       return;
     }
+
     try {
       await deletePage(slug, token);
       loadPages();
     } catch (err) {
-      alert(err instanceof Error ? err.message : "Failed to delete page");
+      alert(
+        err instanceof Error
+          ? err.message
+          : "Failed to delete page"
+      );
     }
   }
 
-  // Filter pages into Core vs Custom/Dynamic
-  const coreSlugsSet = new Set(CORE_PAGE_SLUGS.map((c) => c.slug));
-  const pageMap = new Map(pages.map((p) => [p.slug, p]));
+  const coreSlugsSet = new Set(
+    CORE_PAGE_SLUGS.map((c) => c.slug)
+  );
 
-  const customPages = pages.filter((p) => !coreSlugsSet.has(p.slug));
+  const pageMap = new Map(
+    pages.map((p) => [p.slug, p])
+  );
+
+  const customPages = pages.filter(
+    (p) => !coreSlugsSet.has(p.slug)
+  );
 
   return (
     <div className="flex flex-col gap-8 pb-8">
-      {/* 1. Quick Access: Entity Managers */}
       <section className="flex flex-col gap-3">
         <h2 className="text-xs font-mono uppercase tracking-wider text-neutral-400">
           Core Resource Managers
         </h2>
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {ENTITY_MANAGERS.map((section) => (
-            <Link key={section.path} to={section.path}>
+            <Link
+              key={section.path}
+              to={section.path}
+            >
               <Card className="hover:ring-1 hover:ring-blue-400/50 transition cursor-pointer p-4 flex flex-col justify-between h-full bg-neutral-900/80 border-neutral-800">
                 <div>
-                  <h3 className="font-semibold text-white">{section.label}</h3>
-                  <p className="text-xs text-neutral-400 mt-1">{section.desc}</p>
+                  <h3 className="font-semibold text-white">
+                    {section.label}
+                  </h3>
+
+                  <p className="text-xs text-neutral-400 mt-1">
+                    {section.desc}
+                  </p>
                 </div>
+
                 <span className="text-xs font-medium text-blue-400 mt-4 block">
                   Manage →
                 </span>
@@ -136,11 +172,13 @@ export default function AdminHubPage() {
         </div>
       </section>
 
-      {/* 2. Static / Core Site Pages Section */}
       <section className="flex flex-col gap-3">
         <div className="flex items-center justify-between border-b border-neutral-800 pb-2">
           <div>
-            <h2 className="text-sm font-semibold text-white">Core Site Pages</h2>
+            <h2 className="text-sm font-semibold text-white">
+              Core Site Pages
+            </h2>
+
             <p className="text-xs text-neutral-400">
               Manage Markdown content, metadata, and media for standard navigation pages
             </p>
@@ -148,11 +186,15 @@ export default function AdminHubPage() {
         </div>
 
         {loading ? (
-          <p className="text-xs text-neutral-500 py-2">Loading core pages…</p>
+          <p className="text-xs text-neutral-500 py-2">
+            Loading core pages…
+          </p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {CORE_PAGE_SLUGS.map((core) => {
-              const existingPage = pageMap.get(core.slug);
+              const existingPage = pageMap.get(
+                core.slug
+              );
 
               return (
                 <div
@@ -162,8 +204,10 @@ export default function AdminHubPage() {
                   <div className="min-w-0">
                     <div className="flex items-center gap-2">
                       <h3 className="text-sm font-medium text-white truncate">
-                        {existingPage?.title || core.label}
+                        {existingPage?.title ||
+                          core.label}
                       </h3>
+
                       <span className="text-[10px] font-mono bg-neutral-800 text-neutral-400 px-1.5 py-0.5 rounded shrink-0">
                         /{core.slug}
                       </span>
@@ -200,11 +244,13 @@ export default function AdminHubPage() {
         )}
       </section>
 
-      {/* 3. Dynamic / Custom Pages Section */}
       <section className="flex flex-col gap-3">
         <div className="flex items-center justify-between border-b border-neutral-800 pb-2">
           <div>
-            <h2 className="text-sm font-semibold text-white">Dynamic / Custom Pages</h2>
+            <h2 className="text-sm font-semibold text-white">
+              Dynamic / Custom Pages
+            </h2>
+
             <p className="text-xs text-neutral-400">
               Custom landing pages or research notes created outside standard navigation
             </p>
@@ -219,7 +265,9 @@ export default function AdminHubPage() {
         </div>
 
         {loading ? (
-          <p className="text-xs text-neutral-500 py-2">Loading dynamic pages…</p>
+          <p className="text-xs text-neutral-500 py-2">
+            Loading dynamic pages…
+          </p>
         ) : customPages.length === 0 ? (
           <div className="rounded-lg border border-dashed border-neutral-800 p-6 text-center text-xs text-neutral-500">
             No dynamic pages created yet. Click "+ New Dynamic Page" to add custom routes.
@@ -236,9 +284,11 @@ export default function AdminHubPage() {
                     <h3 className="text-sm font-medium text-white truncate">
                       {page.title}
                     </h3>
+
                     <span className="text-[10px] font-mono bg-neutral-800 text-neutral-400 px-1.5 py-0.5 rounded shrink-0">
                       /{page.slug}
                     </span>
+
                     <span className="text-[10px] font-mono bg-blue-500/10 text-blue-400 border border-blue-500/20 px-1.5 py-0.5 rounded shrink-0">
                       {page.layoutType}
                     </span>
@@ -258,8 +308,11 @@ export default function AdminHubPage() {
                   >
                     Edit
                   </Link>
+
                   <button
-                    onClick={() => handleDelete(page.slug)}
+                    onClick={() =>
+                      handleDelete(page.slug)
+                    }
                     className="text-xs text-red-400 hover:text-red-300 transition"
                   >
                     Delete

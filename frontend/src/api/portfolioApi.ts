@@ -311,6 +311,30 @@ export function createTechnology(
   );
 }
 
+export function updateTechnology(
+  id: number,
+  data: TechnologyRequest,
+  token: string
+) {
+  return sendJson<TechnologyResponse>(
+    `/technologies/${id}`,
+    "PUT",
+    token,
+    data
+  );
+}
+
+export function deleteTechnology(
+  id: number,
+  token: string
+) {
+  return sendJson<void>(
+    `/technologies/${id}`,
+    "DELETE",
+    token
+  );
+}
+
 // ---------------------------------------------------------------------------
 // Media Controller API
 // ---------------------------------------------------------------------------
@@ -427,31 +451,32 @@ export function removeMediaFromWork(
   );
 }
 
+// Page Attachments
 export function attachMediaToPage(
   slug: string,
   mediaId: number,
-  payload: { displayOrder?: number; caption?: string; altText?: string },
+  data: MediaAttachmentRequest,
   token: string
 ) {
   return sendJson<PageResponse>(
     `/pages/${slug}/media/${mediaId}`,
     "POST",
     token,
-    payload
+    data
   );
 }
 
 export function updatePageMedia(
   slug: string,
   mediaId: number,
-  payload: { displayOrder?: number; caption?: string; altText?: string },
+  data: MediaAttachmentRequest,
   token: string
 ) {
   return sendJson<PageResponse>(
     `/pages/${slug}/media/${mediaId}`,
     "PUT",
     token,
-    payload
+    data
   );
 }
 

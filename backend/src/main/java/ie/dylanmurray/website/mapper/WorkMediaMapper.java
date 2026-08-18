@@ -24,6 +24,7 @@ public class WorkMediaMapper {
                 workMedia.getDisplayOrder(),
                 workMedia.getCaption(),
                 workMedia.getAltText(),
+                workMedia.getIsHorizontal(),
                 mediaMapper.toResponse(
                         workMedia.getMedia()
                 )

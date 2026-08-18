@@ -1,8 +1,4 @@
-import {
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   checkMediaHash,
   uploadMedia,
@@ -24,21 +20,17 @@ export default function WorkMediaEditor({
   token,
   onProcessingChange,
 }: WorkMediaEditorProps) {
-  const [editingIndex, setEditingIndex] =
-    useState<number | null>(null);
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
 
   const [caption, setCaption] = useState("");
   const [altText, setAltText] = useState("");
+  const [isHorizontal, setIsHorizontal] = useState(false);
 
-  const [isProcessing, setIsProcessing] =
-    useState(false);
-  const [isDragOver, setIsDragOver] =
-    useState(false);
-  const [error, setError] =
-    useState<string | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [isDragOver, setIsDragOver] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const listRef =
-    useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     onProcessingChange?.(isProcessing);
@@ -49,6 +41,7 @@ export default function WorkMediaEditor({
 
     setCaption(item.caption ?? "");
     setAltText(item.altText ?? "");
+    setIsHorizontal(item.isHorizontal ?? false);
     setEditingIndex(index);
     setError(null);
   }
@@ -56,6 +49,7 @@ export default function WorkMediaEditor({
   function resetEditor() {
     setCaption("");
     setAltText("");
+    setIsHorizontal(false);
     setEditingIndex(null);
     setError(null);
   }
@@ -80,27 +74,20 @@ export default function WorkMediaEditor({
           let media = await checkMediaHash(hash);
 
           if (!media) {
-            media = await uploadMedia(
-              file,
-              hash,
-              token
-            );
+            media = await uploadMedia(file, hash, token);
           }
 
           const newMediaItem: StagedMediaItem = {
             mediaId: media.id,
-            originalFilename:
-              media.originalFilename,
+            originalFilename: media.originalFilename,
             contentType: media.contentType,
             fileSize: media.fileSize,
             displayOrder: currentItems.length,
             viewUrl: media.viewUrl,
+            isHorizontal: false,
           };
 
-          currentItems = [
-            ...currentItems,
-            newMediaItem,
-          ];
+          currentItems = [...currentItems, newMediaItem];
 
           onChange(currentItems);
         } catch {
@@ -109,23 +96,15 @@ export default function WorkMediaEditor({
       }
 
       if (failedFiles.length > 0) {
-        setError(
-          `Failed to upload: ${failedFiles.join(
-            ", "
-          )}`
-        );
+        setError(`Failed to upload: ${failedFiles.join(", ")}`);
       }
     } finally {
       setIsProcessing(false);
     }
   }
 
-  function handleFileInput(
-    event: React.ChangeEvent<HTMLInputElement>
-  ) {
-    const files = Array.from(
-      event.target.files ?? []
-    );
+  function handleFileInput(event: React.ChangeEvent<HTMLInputElement>) {
+    const files = Array.from(event.target.files ?? []);
 
     if (files.length > 0) {
       void handleFiles(files);
@@ -134,9 +113,7 @@ export default function WorkMediaEditor({
     event.target.value = "";
   }
 
-  function handleDragOver(
-    event: React.DragEvent<HTMLLabelElement>
-  ) {
+  function handleDragOver(event: React.DragEvent<HTMLLabelElement>) {
     event.preventDefault();
     event.stopPropagation();
 
@@ -145,18 +122,14 @@ export default function WorkMediaEditor({
     }
   }
 
-  function handleDragLeave(
-    event: React.DragEvent<HTMLLabelElement>
-  ) {
+  function handleDragLeave(event: React.DragEvent<HTMLLabelElement>) {
     event.preventDefault();
     event.stopPropagation();
 
     setIsDragOver(false);
   }
 
-  function handleDrop(
-    event: React.DragEvent<HTMLLabelElement>
-  ) {
+  function handleDrop(event: React.DragEvent<HTMLLabelElement>) {
     event.preventDefault();
     event.stopPropagation();
 
@@ -166,9 +139,7 @@ export default function WorkMediaEditor({
       return;
     }
 
-    const files = Array.from(
-      event.dataTransfer.files ?? []
-    );
+    const files = Array.from(event.dataTransfer.files ?? []);
 
     if (files.length > 0) {
       void handleFiles(files);
@@ -181,73 +152,52 @@ export default function WorkMediaEditor({
     }
 
     const updatedItems = [...mediaItems];
+    const currentItem = updatedItems[editingIndex];
 
     updatedItems[editingIndex] = {
-      ...updatedItems[editingIndex],
+      ...currentItem,
       caption: caption.trim() || undefined,
       altText: altText.trim() || undefined,
+      isHorizontal:
+        currentItem.contentType === "application/pdf"
+          ? isHorizontal
+          : undefined,
     };
 
     onChange(updatedItems);
     resetEditor();
   }
 
-  function moveMedia(
-    index: number,
-    direction: "up" | "down"
-  ) {
-    const newIndex =
-      direction === "up"
-        ? index - 1
-        : index + 1;
+  function moveMedia(index: number, direction: "up" | "down") {
+    const newIndex = direction === "up" ? index - 1 : index + 1;
 
-    if (
-      newIndex < 0 ||
-      newIndex >= mediaItems.length
-    ) {
+    if (newIndex < 0 || newIndex >= mediaItems.length) {
       return;
     }
 
     const container = listRef.current;
-
-    const beforeRects = new Map<
-      string,
-      DOMRect
-    >();
+    const beforeRects = new Map<string, DOMRect>();
 
     if (container) {
-      Array.from(
-        container.children
-      ).forEach((element) => {
-        const key =
-          element.getAttribute(
-            "data-media-key"
-          );
+      Array.from(container.children).forEach((element) => {
+        const key = element.getAttribute("data-media-key");
 
         if (key) {
-          beforeRects.set(
-            key,
-            element.getBoundingClientRect()
-          );
+          beforeRects.set(key, element.getBoundingClientRect());
         }
       });
     }
 
     const updatedItems = [...mediaItems];
 
-    [
-      updatedItems[index],
-      updatedItems[newIndex],
-    ] = [
+    [updatedItems[index], updatedItems[newIndex]] = [
       updatedItems[newIndex],
       updatedItems[index],
     ];
 
-    updatedItems.forEach(
-      (item, newOrder) => {
-        item.displayOrder = newOrder;
-      }
-    );
+    updatedItems.forEach((item, newOrder) => {
+      item.displayOrder = newOrder;
+    });
 
     onChange(updatedItems);
 
@@ -256,13 +206,8 @@ export default function WorkMediaEditor({
         return;
       }
 
-      Array.from(
-        container.children
-      ).forEach((element) => {
-        const key =
-          element.getAttribute(
-            "data-media-key"
-          );
+      Array.from(container.children).forEach((element) => {
+        const key = element.getAttribute("data-media-key");
 
         if (!key) {
           return;
@@ -274,19 +219,12 @@ export default function WorkMediaEditor({
           return;
         }
 
-        const after =
-          element.getBoundingClientRect();
+        const after = element.getBoundingClientRect();
 
-        const deltaX =
-          before.left - after.left;
+        const deltaX = before.left - after.left;
+        const deltaY = before.top - after.top;
 
-        const deltaY =
-          before.top - after.top;
-
-        if (
-          deltaX === 0 &&
-          deltaY === 0
-        ) {
+        if (deltaX === 0 && deltaY === 0) {
           return;
         }
 
@@ -296,14 +234,12 @@ export default function WorkMediaEditor({
               transform: `translate(${deltaX}px, ${deltaY}px)`,
             },
             {
-              transform:
-                "translate(0, 0)",
+              transform: "translate(0, 0)",
             },
           ],
           {
             duration: 180,
-            easing:
-              "cubic-bezier(0.2, 0, 0, 1)",
+            easing: "cubic-bezier(0.2, 0, 0, 1)",
           }
         );
       });
@@ -322,13 +258,8 @@ export default function WorkMediaEditor({
 
     if (editingIndex === index) {
       resetEditor();
-    } else if (
-      editingIndex !== null &&
-      editingIndex > index
-    ) {
-      setEditingIndex(
-        editingIndex - 1
-      );
+    } else if (editingIndex !== null && editingIndex > index) {
+      setEditingIndex(editingIndex - 1);
     }
   }
 
@@ -338,15 +269,10 @@ export default function WorkMediaEditor({
     }
 
     if (bytes < 1024 * 1024) {
-      return `${(bytes / 1024).toFixed(
-        1
-      )} KB`;
+      return `${(bytes / 1024).toFixed(1)} KB`;
     }
 
-    return `${(
-      bytes /
-      (1024 * 1024)
-    ).toFixed(1)} MB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   }
 
   return (
@@ -357,14 +283,10 @@ export default function WorkMediaEditor({
         </label>
 
         <span className="text-xs text-neutral-500">
-          {mediaItems.length}{" "}
-          {mediaItems.length === 1
-            ? "item"
-            : "items"}
+          {mediaItems.length} {mediaItems.length === 1 ? "item" : "items"}
         </span>
       </div>
 
-      {/* Upload / Drop Zone */}
       <label
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
@@ -394,15 +316,12 @@ export default function WorkMediaEditor({
             </p>
 
             <p className="mt-1 text-xs text-neutral-500">
-              Please wait until all files have
-              finished uploading
+              Please wait until all files have finished uploading
             </p>
           </>
         ) : isDragOver ? (
           <>
-            <div className="mb-2 text-xl text-blue-400">
-              ↓
-            </div>
+            <div className="mb-2 text-xl text-blue-400">↓</div>
 
             <p className="text-sm font-medium text-blue-300">
               Drop media here
@@ -410,9 +329,7 @@ export default function WorkMediaEditor({
           </>
         ) : (
           <>
-            <div className="mb-2 text-xl text-neutral-400">
-              +
-            </div>
+            <div className="mb-2 text-xl text-neutral-400">+</div>
 
             <p className="text-sm font-medium text-neutral-300">
               Drag media here, or click to browse
@@ -431,11 +348,7 @@ export default function WorkMediaEditor({
         </p>
       )}
 
-      {/* Media List */}
-      <div
-        ref={listRef}
-        className="flex flex-col gap-3"
-      >
+      <div ref={listRef} className="flex flex-col gap-3">
         {mediaItems.map((item, index) => (
           <div
             key={item.mediaId}
@@ -445,17 +358,14 @@ export default function WorkMediaEditor({
             {editingIndex === index ? (
               <div className="flex flex-col gap-3">
                 <p className="text-sm font-medium text-white">
-                  Editing Metadata:{" "}
-                  {item.originalFilename}
+                  Editing Metadata: {item.originalFilename}
                 </p>
 
                 <label className="flex flex-col gap-1 text-sm text-neutral-300">
                   Caption
                   <input
                     value={caption}
-                    onChange={(e) =>
-                      setCaption(e.target.value)
-                    }
+                    onChange={(e) => setCaption(e.target.value)}
                     className="rounded-md bg-neutral-900 px-3 py-2 border border-neutral-700 text-neutral-200 placeholder:text-neutral-500 focus:outline-none focus:border-neutral-500"
                     placeholder="Employment confirmation or certificate"
                   />
@@ -465,13 +375,23 @@ export default function WorkMediaEditor({
                   Alt Text
                   <input
                     value={altText}
-                    onChange={(e) =>
-                      setAltText(e.target.value)
-                    }
+                    onChange={(e) => setAltText(e.target.value)}
                     className="rounded-md bg-neutral-900 px-3 py-2 border border-neutral-700 text-neutral-200 placeholder:text-neutral-500 focus:outline-none focus:border-neutral-500"
                     placeholder="Document description"
                   />
                 </label>
+
+                {item.contentType === "application/pdf" && (
+                  <label className="flex items-center gap-2 text-sm text-neutral-300 cursor-pointer pt-1">
+                    <input
+                      type="checkbox"
+                      checked={isHorizontal}
+                      onChange={(e) => setIsHorizontal(e.target.checked)}
+                      className="rounded bg-neutral-900 border-neutral-700 text-blue-500 focus:ring-blue-500"
+                    />
+                    Landscape / Presentation layout (e.g., PowerPoint)
+                  </label>
+                )}
 
                 <div className="flex justify-end gap-2">
                   <button
@@ -494,21 +414,13 @@ export default function WorkMediaEditor({
             ) : (
               <div className="flex items-center justify-between gap-4">
                 <div className="min-w-0 flex items-center gap-3">
-                  {item.contentType.startsWith(
-                    "image/"
-                  ) && (
-                      <img
-                        src={resolveMediaUrl(
-                          item.viewUrl,
-                          item.mediaId
-                        )}
-                        alt={
-                          item.altText ||
-                          item.originalFilename
-                        }
-                        className="w-10 h-10 object-cover rounded border border-neutral-700 shrink-0"
-                      />
-                    )}
+                  {item.contentType.startsWith("image/") && (
+                    <img
+                      src={resolveMediaUrl(item.viewUrl, item.mediaId)}
+                      alt={item.altText || item.originalFilename}
+                      className="w-10 h-10 object-cover rounded border border-neutral-700 shrink-0"
+                    />
+                  )}
 
                   <div className="min-w-0">
                     <div className="flex items-center gap-2">
@@ -522,13 +434,10 @@ export default function WorkMediaEditor({
                     </div>
 
                     <p className="text-xs text-neutral-400 truncate mt-0.5">
-                      Order: {item.displayOrder} •{" "}
-                      {formatFileSize(
-                        item.fileSize
-                      )}
-                      {item.caption
-                        ? ` • "${item.caption}"`
-                        : ""}
+                      Order: {item.displayOrder} • {formatFileSize(item.fileSize)}
+                      {item.contentType === "application/pdf" &&
+                        ` • Layout: ${item.isHorizontal ? "Landscape" : "Portrait"}`}
+                      {item.caption ? ` • "${item.caption}"` : ""}
                     </p>
                   </div>
                 </div>
@@ -537,12 +446,7 @@ export default function WorkMediaEditor({
                   <div className="flex items-center rounded-md border border-neutral-700 overflow-hidden">
                     <button
                       type="button"
-                      onClick={() =>
-                        moveMedia(
-                          index,
-                          "up"
-                        )
-                      }
+                      onClick={() => moveMedia(index, "up")}
                       disabled={index === 0}
                       title="Move up"
                       className="px-2 py-1.5 text-sm text-neutral-400 hover:bg-neutral-700 hover:text-white disabled:cursor-not-allowed disabled:opacity-25"
@@ -552,16 +456,8 @@ export default function WorkMediaEditor({
 
                     <button
                       type="button"
-                      onClick={() =>
-                        moveMedia(
-                          index,
-                          "down"
-                        )
-                      }
-                      disabled={
-                        index ===
-                        mediaItems.length - 1
-                      }
+                      onClick={() => moveMedia(index, "down")}
+                      disabled={index === mediaItems.length - 1}
                       title="Move down"
                       className="px-2 py-1.5 text-sm text-neutral-400 hover:bg-neutral-700 hover:text-white disabled:cursor-not-allowed disabled:opacity-25 border-l border-neutral-700"
                     >
@@ -571,9 +467,7 @@ export default function WorkMediaEditor({
 
                   <button
                     type="button"
-                    onClick={() =>
-                      startEditing(index)
-                    }
+                    onClick={() => startEditing(index)}
                     disabled={isProcessing}
                     className="text-sm text-neutral-400 hover:text-white transition disabled:opacity-40"
                   >
@@ -582,9 +476,7 @@ export default function WorkMediaEditor({
 
                   <button
                     type="button"
-                    onClick={() =>
-                      removeMedia(index)
-                    }
+                    onClick={() => removeMedia(index)}
                     disabled={isProcessing}
                     className="text-sm text-red-400 hover:text-red-300 transition disabled:opacity-40"
                   >

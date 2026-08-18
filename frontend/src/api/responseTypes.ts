@@ -22,6 +22,7 @@ export interface ProjectMediaResponse {
   displayOrder: number;
   caption: string | null;
   altText: string | null;
+  isHorizontal?: boolean;
   media: MediaResponse;
 }
 
@@ -40,6 +41,7 @@ export interface WorkMediaResponse {
   displayOrder: number;
   caption?: string | null;
   altText?: string | null;
+  isHorizontal?: boolean;
   media: MediaResponse;
 }
 
@@ -140,6 +142,7 @@ export interface PageMediaResponse {
   displayOrder: number;
   caption?: string | null;
   altText?: string | null;
+  isHorizontal?: boolean;
   media: MediaResponse;
 }
 

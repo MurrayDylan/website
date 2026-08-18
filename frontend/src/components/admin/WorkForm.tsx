@@ -74,6 +74,7 @@ export default function WorkForm({
       displayOrder: wm.displayOrder ?? 0,
       caption: wm.caption ?? undefined,
       altText: wm.altText ?? undefined,
+      isHorizontal: wm.isHorizontal ?? false,
       viewUrl: wm.media.viewUrl,
     }))
   );
@@ -84,7 +85,6 @@ export default function WorkForm({
   const [isSubmitting, setIsSubmitting] =
     useState(false);
 
-  // Prevent submission while media is still uploading.
   const [isMediaUploading, setIsMediaUploading] =
     useState(false);
 
@@ -118,6 +118,7 @@ export default function WorkForm({
           displayOrder: wm.displayOrder ?? 0,
           caption: wm.caption ?? undefined,
           altText: wm.altText ?? undefined,
+          isHorizontal: wm.isHorizontal ?? false,
           viewUrl: wm.media.viewUrl,
         }))
       );
@@ -127,9 +128,6 @@ export default function WorkForm({
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
 
-    // This should never normally happen because the button is
-    // disabled, but keeping the guard here prevents submission
-    // if handleSubmit is triggered programmatically.
     if (isMediaUploading) {
       return;
     }

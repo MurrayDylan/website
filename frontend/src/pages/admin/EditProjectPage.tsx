@@ -49,18 +49,15 @@ export default function EditProjectPage() {
 
     const projectId = Number(id);
 
-    // 1. Update primary project data (title, description, links, tech)
     await updateProject(projectId, data, token);
 
-    // 2. Extract initial media IDs that were already attached in the database
     const initialMedia = project?.media ?? (project as any)?.projectMedia ?? [];
     const initialMediaIds = new Set<number>(
       initialMedia.map((m: any) => (m.media ? m.media.id : m.id)).filter(Boolean)
     );
 
     const currentMediaIds = new Set<number>(mediaItems.map((m) => m.mediaId));
-
-    // 3. Detach media items that were removed from the basket
+    
     for (const mediaId of initialMediaIds) {
       if (!currentMediaIds.has(mediaId)) {
         try {
@@ -79,21 +76,19 @@ export default function EditProjectPage() {
         displayOrder: Number(item.displayOrder) || 0,
         caption: item.caption ?? undefined,
         altText: item.altText ?? undefined,
+        isHorizontal: item.isHorizontal,
       };
 
       if (initialMediaIds.has(item.mediaId)) {
-        // Media is already attached: update metadata (caption/displayOrder)
         try {
           await updateProjectMedia(projectId, item.mediaId, attachmentPayload, token);
         } catch (err) {
-          // Ignore duplicate/conflict errors if metadata update fails or isn't needed
         }
       } else {
-        // Newly added media: attach to project
         try {
           await attachMediaToProject(projectId, item.mediaId, attachmentPayload, token);
         } catch (err) {
-          // Silently ignore "already attached" errors
+
         }
       }
     }

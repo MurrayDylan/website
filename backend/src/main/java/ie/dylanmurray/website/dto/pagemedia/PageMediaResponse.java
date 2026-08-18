@@ -8,6 +8,7 @@ public class PageMediaResponse {
     private Integer displayOrder;
     private String caption;
     private String altText;
+    private Boolean isHorizontal;
     private MediaResponse media;
 
     public PageMediaResponse(
@@ -15,12 +16,14 @@ public class PageMediaResponse {
             Integer displayOrder,
             String caption,
             String altText,
+            Boolean isHorizontal,
             MediaResponse media
     ) {
         this.id = id;
         this.displayOrder = displayOrder;
         this.caption = caption;
         this.altText = altText;
+        this.isHorizontal = isHorizontal;
         this.media = media;
     }
 
@@ -38,6 +41,10 @@ public class PageMediaResponse {
 
     public String getAltText() {
         return altText;
+    }
+
+    public Boolean getIsHorizontal() {
+        return isHorizontal;
     }
 
     public MediaResponse getMedia() {

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   useNavigate,
   useSearchParams,
@@ -44,6 +44,9 @@ export default function CreatePagePage() {
   const [searchParams] =
     useSearchParams();
 
+  const [isSubmitting, setIsSubmitting] =
+    useState(false);
+
   const initialSlug =
     searchParams.get("slug") ?? "";
 
@@ -86,29 +89,37 @@ export default function CreatePagePage() {
       );
     }
 
-    const createdPage =
-      await createPage(
-        data,
-        token
-      );
+    try {
+      setIsSubmitting(true);
 
-    for (const item of mediaItems) {
-      await attachMediaToPage(
-        createdPage.slug,
-        item.mediaId,
-        {
-          displayOrder:
-            Number(item.displayOrder) || 0,
-          caption:
-            item.caption,
-          altText:
-            item.altText,
-        },
-        token
-      );
+      const createdPage =
+        await createPage(
+          data,
+          token
+        );
+
+      for (const item of mediaItems) {
+        await attachMediaToPage(
+          createdPage.slug,
+          item.mediaId,
+          {
+            displayOrder:
+              Number(item.displayOrder) || 0,
+            caption:
+              item.caption ?? undefined,
+            altText:
+              item.altText ?? undefined,
+            isHorizontal:
+              item.isHorizontal ?? false,
+          },
+          token
+        );
+      }
+
+      navigate("/admin");
+    } finally {
+      setIsSubmitting(false);
     }
-
-    navigate("/admin");
   }
 
   return (
@@ -127,6 +138,7 @@ export default function CreatePagePage() {
           updatedAt: new Date().toISOString(),
         }}
         onSubmit={handleSubmit}
+        isSubmitting={isSubmitting}
         submitButtonText="Create Page"
       />
     </div>

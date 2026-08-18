@@ -14,7 +14,9 @@ public record ProjectMediaRequest(
 
         String caption,
 
-        String altText
+        String altText,
+
+        Boolean isHorizontal
 
 ) {
 }

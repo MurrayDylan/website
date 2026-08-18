@@ -29,6 +29,7 @@ export default function PageMediaEditor({
 
   const [caption, setCaption] = useState("");
   const [altText, setAltText] = useState("");
+  const [isHorizontal, setIsHorizontal] = useState(false);
 
   const [isProcessing, setIsProcessing] =
     useState(false);
@@ -49,6 +50,7 @@ export default function PageMediaEditor({
 
     setCaption(item.caption ?? "");
     setAltText(item.altText ?? "");
+    setIsHorizontal(item.isHorizontal ?? false);
     setEditingIndex(index);
     setError(null);
   }
@@ -56,6 +58,7 @@ export default function PageMediaEditor({
   function resetEditor() {
     setCaption("");
     setAltText("");
+    setIsHorizontal(false);
     setEditingIndex(null);
     setError(null);
   }
@@ -95,6 +98,7 @@ export default function PageMediaEditor({
             fileSize: media.fileSize,
             displayOrder: currentItems.length,
             viewUrl: media.viewUrl,
+            isHorizontal: false,
           };
 
           currentItems = [
@@ -181,11 +185,16 @@ export default function PageMediaEditor({
     }
 
     const updatedItems = [...mediaItems];
+    const currentItem = updatedItems[editingIndex];
 
     updatedItems[editingIndex] = {
-      ...updatedItems[editingIndex],
+      ...currentItem,
       caption: caption.trim() || undefined,
       altText: altText.trim() || undefined,
+      isHorizontal:
+        currentItem.contentType === "application/pdf"
+          ? isHorizontal
+          : undefined,
     };
 
     onChange(updatedItems);
@@ -473,6 +482,21 @@ export default function PageMediaEditor({
                   />
                 </label>
 
+                {/* Conditional Horizontal Toggle for PDFs */}
+                {item.contentType === "application/pdf" && (
+                  <label className="flex items-center gap-2 text-sm text-neutral-300 cursor-pointer pt-1">
+                    <input
+                      type="checkbox"
+                      checked={isHorizontal}
+                      onChange={(e) =>
+                        setIsHorizontal(e.target.checked)
+                      }
+                      className="rounded bg-neutral-900 border-neutral-700 text-blue-500 focus:ring-blue-500"
+                    />
+                    Landscape / Presentation layout (e.g., PowerPoint)
+                  </label>
+                )}
+
                 <div className="flex justify-end gap-2">
                   <button
                     type="button"
@@ -526,6 +550,8 @@ export default function PageMediaEditor({
                       {formatFileSize(
                         item.fileSize
                       )}
+                      {item.contentType === "application/pdf" &&
+                        ` • Layout: ${item.isHorizontal ? "Landscape" : "Portrait"}`}
                       {item.caption
                         ? ` • "${item.caption}"`
                         : ""}

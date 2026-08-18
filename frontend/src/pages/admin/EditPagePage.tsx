@@ -169,8 +169,7 @@ export default function EditPagePage() {
           )
         );
 
-      // Remove media that no longer exists
-      // in the editor.
+      // Remove media that no longer exists in the editor.
       for (const existing of existingMedia) {
         if (
           !submittedMediaIds.has(
@@ -201,6 +200,8 @@ export default function EditPagePage() {
             item.caption ?? undefined,
           altText:
             item.altText ?? undefined,
+          isHorizontal:
+            item.isHorizontal ?? false,
         };
 
         if (existing) {

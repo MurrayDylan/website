@@ -16,7 +16,10 @@ export default function Chip({
   return (
     <span
       onClick={onClick}
-      className={`group inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium transition-colors
+      className={`group inline-flex items-center rounded-full font-medium transition-colors
+        px-3 py-1 text-sm gap-1.5
+        sm:px-3.5 sm:py-1.5 sm:text-sm sm:gap-1.5
+        lg:px-4 lg:py-2 lg:text-base lg:gap-2
         ${isInteractive ? "cursor-pointer" : ""}
         ${
           selected

@@ -75,7 +75,8 @@ public class MediaAttachmentService {
                         media,
                         request.displayOrder(),
                         request.caption(),
-                        request.altText()
+                        request.altText(),
+                        request.isHorizontal() != null ? request.isHorizontal() : false
                 );
 
         project.addMedia(projectMedia);
@@ -121,7 +122,8 @@ public class MediaAttachmentService {
                         media,
                         request.displayOrder(),
                         request.caption(),
-                        request.altText()
+                        request.altText(),
+                        request.isHorizontal() != null ? request.isHorizontal() : false
                 );
 
         work.addMedia(workMedia);
@@ -167,7 +169,8 @@ public class MediaAttachmentService {
                         media,
                         request.displayOrder(),
                         request.caption(),
-                        request.altText()
+                        request.altText(),
+                        request.isHorizontal() != null ? request.isHorizontal() : false
                 );
 
         page.addMedia(pageMedia);
@@ -197,7 +200,8 @@ public class MediaAttachmentService {
         attachment.update(
                 request.displayOrder(),
                 request.caption(),
-                request.altText()
+                request.altText(),
+                request.isHorizontal() != null ? request.isHorizontal() : false
         );
     }
 
@@ -223,7 +227,8 @@ public class MediaAttachmentService {
         attachment.update(
                 request.displayOrder(),
                 request.caption(),
-                request.altText()
+                request.altText(),
+                request.isHorizontal() != null ? request.isHorizontal() : false
         );
     }
 
@@ -257,7 +262,8 @@ public class MediaAttachmentService {
         attachment.update(
                 request.displayOrder(),
                 request.caption(),
-                request.altText()
+                request.altText(),
+                request.isHorizontal() != null ? request.isHorizontal() : false
         );
     }
 

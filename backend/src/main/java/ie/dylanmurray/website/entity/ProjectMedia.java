@@ -49,6 +49,12 @@ public class ProjectMedia {
     )
     private String altText;
 
+    @Column(
+            name = "is_horizontal",
+            nullable = false
+    )
+    private Boolean isHorizontal = false;
+
     protected ProjectMedia() {
     }
 
@@ -57,13 +63,15 @@ public class ProjectMedia {
             Media media,
             Integer displayOrder,
             String caption,
-            String altText
+            String altText,
+            Boolean isHorizontal
     ) {
         this.project = project;
         this.media = media;
         this.displayOrder = displayOrder;
         this.caption = caption;
         this.altText = altText;
+        this.isHorizontal = isHorizontal != null ? isHorizontal : false;
     }
 
     public Long getId() {
@@ -90,43 +98,43 @@ public class ProjectMedia {
         return altText;
     }
 
-    public void setProject(
-            Project project
-    ) {
+    public Boolean getIsHorizontal() {
+        return isHorizontal;
+    }
+
+    public void setProject(Project project) {
         this.project = project;
     }
 
-    public void setMedia(
-            Media media
-    ) {
+    public void setMedia(Media media) {
         this.media = media;
     }
 
-    public void setDisplayOrder(
-            Integer displayOrder
-    ) {
+    public void setDisplayOrder(Integer displayOrder) {
         this.displayOrder = displayOrder;
     }
 
-    public void setCaption(
-            String caption
-    ) {
+    public void setCaption(String caption) {
         this.caption = caption;
     }
 
-    public void setAltText(
-            String altText
-    ) {
+    public void setAltText(String altText) {
         this.altText = altText;
+    }
+
+    public void setIsHorizontal(Boolean horizontal) {
+        isHorizontal = horizontal != null ? horizontal : false;
     }
 
     public void update(
             Integer displayOrder,
             String caption,
-            String altText
+            String altText,
+            Boolean isHorizontal
     ) {
         this.displayOrder = displayOrder;
         this.caption = caption;
         this.altText = altText;
+        this.isHorizontal = isHorizontal != null ? isHorizontal : false;
     }
 }

@@ -44,6 +44,12 @@ public class PageMedia {
     private String caption;
 
     @Column(
+            name = "is_horizontal",
+            nullable = false
+    )
+    private Boolean isHorizontal = false;
+
+    @Column(
             name = "alt_text",
             columnDefinition = "TEXT"
     )
@@ -57,13 +63,15 @@ public class PageMedia {
             Media media,
             Integer displayOrder,
             String caption,
-            String altText
+            String altText,
+            Boolean isHorizontal
     ) {
         this.page = page;
         this.media = media;
         this.displayOrder = displayOrder;
         this.caption = caption;
         this.altText = altText;
+        this.isHorizontal = isHorizontal;
     }
 
     public Long getId() {
@@ -88,6 +96,10 @@ public class PageMedia {
 
     public String getAltText() {
         return altText;
+    }
+
+    public Boolean getIsHorizontal(){
+        return isHorizontal;
     }
 
     public void setPage(
@@ -120,13 +132,21 @@ public class PageMedia {
         this.altText = altText;
     }
 
+    public void setIsHorizontal(
+        Boolean isHorizontal
+    ) {
+        this.isHorizontal = isHorizontal;
+    }
+
     public void update(
             Integer displayOrder,
             String caption,
-            String altText
+            String altText,
+            Boolean isHorizontal
     ) {
         this.displayOrder = displayOrder;
         this.caption = caption;
         this.altText = altText;
+        this.isHorizontal = isHorizontal;
     }
 }

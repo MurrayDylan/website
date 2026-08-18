@@ -24,6 +24,7 @@ public class ProjectMediaMapper {
                 projectMedia.getDisplayOrder(),
                 projectMedia.getCaption(),
                 projectMedia.getAltText(),
+                projectMedia.getIsHorizontal(),
                 mediaMapper.toResponse(
                         projectMedia.getMedia()
                 )

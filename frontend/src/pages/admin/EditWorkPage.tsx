@@ -10,7 +10,7 @@ import {
   removeMediaFromWork,
 } from "../../api/portfolioApi";
 import { type WorkExperienceResponse } from "../../api/responseTypes";
-import { type WorkExperienceRequest } from "../../api/requestTypes"
+import { type WorkExperienceRequest } from "../../api/requestTypes";
 import WorkForm from "../../components/admin/WorkForm";
 import { type StagedMediaItem } from "../../components/admin/ProjectMediaEditor";
 
@@ -49,16 +49,13 @@ export default function EditWorkPage() {
 
     const workId = Number(id);
 
-    // 1. Update primary work experience text fields
     await updateWorkExperience(workId, data, token);
 
-    // 2. Identify initially attached media IDs
     const initialMediaIds = new Set<number>(
       (work?.media ?? []).map((m) => m.media.id)
     );
     const currentMediaIds = new Set<number>(mediaItems.map((m) => m.mediaId));
 
-    // 3. Detach removed media items
     for (const mediaId of initialMediaIds) {
       if (!currentMediaIds.has(mediaId)) {
         try {
@@ -69,7 +66,6 @@ export default function EditWorkPage() {
       }
     }
 
-    // 4. Attach or Update remaining media items
     for (const item of mediaItems) {
       if (!item.mediaId) continue;
 
@@ -77,20 +73,17 @@ export default function EditWorkPage() {
         displayOrder: Number(item.displayOrder) || 0,
         caption: item.caption ?? undefined,
         altText: item.altText ?? undefined,
+        isHorizontal: item.isHorizontal,
       };
 
       if (initialMediaIds.has(item.mediaId)) {
         try {
           await updateWorkMedia(workId, item.mediaId, payload, token);
-        } catch (err) {
-          // Ignore conflict errors
-        }
+        } catch (err) {}
       } else {
         try {
           await attachMediaToWork(workId, item.mediaId, payload, token);
-        } catch (err) {
-          // Ignore attachment errors
-        }
+        } catch (err) {}
       }
     }
 

@@ -17,6 +17,7 @@ import AdminWorkPage from "./pages/admin/AdminWorkPage";
 import AdminLayoutTemplatesPage from "./pages/admin/AdminLayoutTemplatePage";
 import AdminSettingsPage from "./pages/admin/AdminSettingsPage";
 import AdminEducationPage from "./pages/admin/AdminEducationPage";
+import AdminTechnologiesPage from "./pages/admin/AdminTechnologiesPage";
 
 import CreateProjectPage from "./pages/admin/CreateProjectPage";
 import CreateWorkPage from "./pages/admin/CreateWorkPage";
@@ -59,7 +60,7 @@ export default function App() {
               <Route path="/admin/education" element={<AdminEducationPage />} />
               <Route path="/admin/education/new" element={<CreateEducationPage />} />
               <Route path="/admin/education/:id/edit" element={<EditEducationPage />} />
-              
+              <Route path="/admin/technologies" element={<AdminTechnologiesPage />}/>
             </Route>
 
             {/* Dynamic Page Engine Route Catch-All */}

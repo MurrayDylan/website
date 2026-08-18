@@ -24,6 +24,7 @@ public class PageMediaMapper {
                 pageMedia.getDisplayOrder(),
                 pageMedia.getCaption(),
                 pageMedia.getAltText(),
+                pageMedia.getIsHorizontal(),
                 mediaMapper.toResponse(
                         pageMedia.getMedia()
                 )

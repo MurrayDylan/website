@@ -7,45 +7,30 @@ import {
 interface DynamicMetadataFormProps {
   data: Record<string, any>;
   onChange: (updatedData: Record<string, any>) => void;
-  path?: string[];
 }
 
 export default function DynamicMetadataForm({
   data,
   onChange,
-  path = [],
 }: DynamicMetadataFormProps) {
-  function handleFieldChange(keys: string[], value: any) {
-    const newData = JSON.parse(JSON.stringify(data));
-
-    if (keys.length === 0) {
-      onChange(value);
-      return;
-    }
-
-    let current = newData;
-
-    for (let i = 0; i < keys.length - 1; i++) {
-      if (
-        current[keys[i]] === null ||
-        typeof current[keys[i]] !== "object"
-      ) {
-        current[keys[i]] = {};
-      }
-
-      current = current[keys[i]];
-    }
-
-    current[keys[keys.length - 1]] = value;
-
-    onChange(newData);
+  // handleFieldChange only ever updates ONE key on the CURRENT `data`
+  // object. Every recursive call already receives `data` scoped to
+  // exactly the subtree it's editing, and every recursive call's
+  // `onChange` already knows how to merge its result back into its
+  // parent. So there's no need to walk a multi-segment path — doing
+  // so was the bug (it applied an ancestor-relative path to an
+  // already-scoped object, creating phantom nested keys instead of
+  // updating the real field).
+  function handleFieldChange(key: string, value: any) {
+    onChange({
+      ...data,
+      [key]: value,
+    });
   }
 
   return (
     <div className="flex flex-col gap-3">
       {Object.entries(data).map(([key, value]) => {
-        const currentPath = [...path, key];
-
         // ---------------------------------------------------------------
         // Block type identifier
         // ---------------------------------------------------------------
@@ -138,7 +123,7 @@ export default function DynamicMetadataForm({
                           )
                         : {};
 
-                      handleFieldChange(currentPath, {
+                      handleFieldChange(key, {
                         ...value,
                         [newSubKey]: template,
                       });
@@ -166,10 +151,7 @@ export default function DynamicMetadataForm({
                             const updated = { ...value };
                             delete updated[subKey];
 
-                            handleFieldChange(
-                              currentPath,
-                              updated
-                            );
+                            handleFieldChange(key, updated);
                           }}
                           className="text-[11px] text-red-400 hover:text-red-300"
                         >
@@ -180,18 +162,11 @@ export default function DynamicMetadataForm({
                       <DynamicMetadataForm
                         data={subValue as Record<string, any>}
                         onChange={(updated) =>
-                          handleFieldChange(
-                            currentPath,
-                            {
-                              ...value,
-                              [subKey]: updated,
-                            }
-                          )
+                          handleFieldChange(key, {
+                            ...value,
+                            [subKey]: updated,
+                          })
                         }
-                        path={[
-                          ...currentPath,
-                          subKey,
-                        ]}
                       />
                     </div>
                   ))}
@@ -222,12 +197,8 @@ export default function DynamicMetadataForm({
                   <DynamicMetadataForm
                     data={value}
                     onChange={(subUpdated) =>
-                      handleFieldChange(
-                        currentPath,
-                        subUpdated
-                      )
+                      handleFieldChange(key, subUpdated)
                     }
-                    path={currentPath}
                   />
                 </div>
               )}
@@ -286,10 +257,10 @@ export default function DynamicMetadataForm({
                             JSON.stringify(schema)
                           );
 
-                        handleFieldChange(
-                          currentPath,
-                          [...value, template]
-                        );
+                        handleFieldChange(key, [
+                          ...value,
+                          template,
+                        ]);
                       }}
                     >
                       <option value="">
@@ -333,10 +304,10 @@ export default function DynamicMetadataForm({
                                 )
                               : {};
 
-                        handleFieldChange(
-                          currentPath,
-                          [...value, template]
-                        );
+                        handleFieldChange(key, [
+                          ...value,
+                          template,
+                        ]);
                       }}
                       className="text-xs bg-neutral-700 hover:bg-neutral-600 text-white px-2 py-1 rounded transition cursor-pointer"
                     >
@@ -364,7 +335,7 @@ export default function DynamicMetadataForm({
                           type="button"
                           onClick={() =>
                             handleFieldChange(
-                              currentPath,
+                              key,
                               value.filter(
                                 (_, i) => i !== index
                               )
@@ -379,22 +350,10 @@ export default function DynamicMetadataForm({
                       <DynamicMetadataForm
                         data={item}
                         onChange={(updatedItem) => {
-                          const newArray = [
-                            ...value,
-                          ];
-
-                          newArray[index] =
-                            updatedItem;
-
-                          handleFieldChange(
-                            currentPath,
-                            newArray
-                          );
+                          const newArray = [...value];
+                          newArray[index] = updatedItem;
+                          handleFieldChange(key, newArray);
                         }}
-                        path={[
-                          ...currentPath,
-                          index.toString(),
-                        ]}
                       />
                     </div>
                   ))}
@@ -424,7 +383,7 @@ export default function DynamicMetadataForm({
                 value={value.join(", ")}
                 onChange={(e) =>
                   handleFieldChange(
-                    currentPath,
+                    key,
                     e.target.value
                       .split(",")
                       .map((s) => s.trim())
@@ -457,10 +416,7 @@ export default function DynamicMetadataForm({
               <textarea
                 value={value ?? ""}
                 onChange={(e) =>
-                  handleFieldChange(
-                    currentPath,
-                    e.target.value
-                  )
+                  handleFieldChange(key, e.target.value)
                 }
                 rows={4}
                 className="rounded bg-neutral-800 border border-neutral-700 p-2 text-xs text-white font-mono resize-y"
@@ -475,7 +431,7 @@ export default function DynamicMetadataForm({
                 value={value ?? ""}
                 onChange={(e) =>
                   handleFieldChange(
-                    currentPath,
+                    key,
                     typeof value === "number"
                       ? Number(e.target.value)
                       : e.target.value
