@@ -1,7 +1,14 @@
 import { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { motion } from "framer-motion";
-import { type PageResponse, type WorkExperienceResponse, type ProjectResponse, type EducationResponse, type TechnologyResponse, type SiteSettingsResponse } from "../../api/responseTypes";
+import {
+  type PageResponse,
+  type WorkExperienceResponse,
+  type ProjectResponse,
+  type EducationResponse,
+  type TechnologyResponse,
+  type SiteSettingsResponse,
+} from "../../api/responseTypes";
 import {
   fetchSiteSettings,
   fetchWorkExperience,
@@ -28,6 +35,18 @@ interface AboutStat {
 interface ExtraWorkInfo {
   workImpact: string;
   shortHandDescription: string;
+}
+
+function extractShorthandDescription(description: string): { shorthand: string | null; cleanDescription: string } {
+  const match = description.match(/<!--\s*short:\s*([\s\S]*?)\s*-->/);
+
+  if (match) {
+    const shorthand = match[1].trim();
+    const cleanDescription = description.replace(/<!--\s*short:[\s\S]*?-->/, "").trim();
+    return { shorthand, cleanDescription };
+  }
+
+  return { shorthand: null, cleanDescription: description };
 }
 
 export default function AboutLayout({ page }: { page: PageResponse }) {
@@ -99,7 +118,6 @@ export default function AboutLayout({ page }: { page: PageResponse }) {
       } else {
         console.error("Failed to load technologies", techRes.reason);
       }
-
     });
 
     return () => {
@@ -186,7 +204,7 @@ export default function AboutLayout({ page }: { page: PageResponse }) {
         </div>
       </motion.div>
 
-      {/* Stat Callouts — from page.metadata, nothing to fetch */}
+      {/* Stat Callouts */}
       {stats.length > 0 && (
         <motion.div variants={staggerItem} className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {stats.map((stat, idx) => (
@@ -202,7 +220,7 @@ export default function AboutLayout({ page }: { page: PageResponse }) {
         </motion.div>
       )}
 
-      {/* About — page.content, unchanged */}
+      {/* About */}
       <motion.section variants={staggerItem} className="space-y-3">
         <h2 className="text-xs font-semibold uppercase tracking-wider text-neutral-400">About</h2>
         {page.content && (
@@ -212,7 +230,7 @@ export default function AboutLayout({ page }: { page: PageResponse }) {
         )}
       </motion.section>
 
-      {/* Work Experience — real fetch, impact from metadata map */}
+      {/* Work Experience */}
       {workExperience.length > 0 && (
         <motion.section variants={staggerItem} className="space-y-4">
           <h2 className="text-xs font-semibold uppercase tracking-wider text-neutral-400">
@@ -272,27 +290,32 @@ export default function AboutLayout({ page }: { page: PageResponse }) {
             Selected Projects
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {featuredProjects.map((proj) => (
-              <div
-                key={proj.id}
-                className="bg-neutral-900/80 border border-neutral-800 p-4 rounded-lg flex flex-col justify-between space-y-3 hover:border-neutral-700 transition"
-              >
-                <div className="space-y-2">
-                  <h3 className="text-sm font-bold text-white">{proj.title}</h3>
-                  <p className="text-xs text-neutral-300 leading-relaxed">{proj.description}</p>
+            {featuredProjects.map((proj) => {
+              const { shorthand, cleanDescription } = extractShorthandDescription(proj.description || "");
+              const displayText = shorthand || cleanDescription;
+
+              return (
+                <div
+                  key={proj.id}
+                  className="bg-neutral-900/80 border border-neutral-800 p-4 rounded-lg flex flex-col justify-between space-y-3 hover:border-neutral-700 transition"
+                >
+                  <div className="space-y-2">
+                    <h3 className="text-sm font-bold text-white">{proj.title}</h3>
+                    <p className="text-xs text-neutral-300 leading-relaxed">{displayText}</p>
+                  </div>
+                  <div className="flex flex-wrap gap-1 pt-2 border-t border-neutral-800/80">
+                    {proj.technologies.map((tech) => (
+                      <span
+                        key={tech.id}
+                        className="text-[11px] bg-neutral-800 text-neutral-300 px-2 py-0.5 rounded"
+                      >
+                        {tech.name}
+                      </span>
+                    ))}
+                  </div>
                 </div>
-                <div className="flex flex-wrap gap-1 pt-2 border-t border-neutral-800/80">
-                  {proj.technologies.map((tech) => (
-                    <span
-                      key={tech.id}
-                      className="text-[11px] bg-neutral-800 text-neutral-300 px-2 py-0.5 rounded"
-                    >
-                      {tech.name}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </motion.section>
       )}

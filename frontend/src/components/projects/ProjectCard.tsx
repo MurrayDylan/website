@@ -17,6 +17,18 @@ interface ProjectCardProps {
   onToggleExpand: () => void;
 }
 
+function extractShorthandDescription(description: string): { shorthand: string | null; cleanDescription: string } {
+  const match = description.match(/<!--\s*short:\s*([\s\S]*?)\s*-->/);
+
+  if (match) {
+    const shorthand = match[1].trim();
+    const cleanDescription = description.replace(/<!--\s*short:[\s\S]*?-->/, "").trim();
+    return { shorthand, cleanDescription };
+  }
+
+  return { shorthand: null, cleanDescription: description };
+}
+
 export default function ProjectCard({
   project,
   isOverlay = false,
@@ -24,6 +36,8 @@ export default function ProjectCard({
   onToggleExpand,
 }: ProjectCardProps) {
   const isMobile = layoutMode === "mobile";
+
+  const { shorthand, cleanDescription } = extractShorthandDescription(project.description || "");
 
   const mediaItems = [...(project.media ?? [])]
     .sort((a, b) => a.displayOrder - b.displayOrder)
@@ -59,7 +73,7 @@ export default function ProjectCard({
         </div>
 
         <div className="text-base leading-8 text-neutral-300 prose prose-invert prose-base max-w-none break-words">
-          <ReactMarkdown>{project.description}</ReactMarkdown>
+          <ReactMarkdown>{cleanDescription}</ReactMarkdown>
         </div>
 
         {mediaItems.length > 0 && (
@@ -96,7 +110,7 @@ export default function ProjectCard({
             </div>
 
             <p className="text-base text-neutral-400 line-clamp-2 leading-7">
-              {project.description}
+              {shorthand || cleanDescription}
             </p>
           </div>
 
