@@ -55,7 +55,7 @@ export default function AboutLayout({ page }: { page: PageResponse }) {
   const status =
     (page.metadata?.status as string) === "Unemployed"
       ? "Open to Software Engineering Opportunities"
-      : (page.metadata?.status as string) || "Open to Software Engineering Opportunities";
+      : (page.metadata?.status as string) || "";
   const stats: AboutStat[] = (page.metadata?.stats as AboutStat[]) ?? [];
 
   const extraWorkInfo: Record<string, ExtraWorkInfo> =
@@ -132,7 +132,6 @@ export default function AboutLayout({ page }: { page: PageResponse }) {
       animate="show"
       className="flex flex-col flex-1 max-w-4xl mx-auto w-full py-6 px-4 space-y-12 text-neutral-200"
     >
-      {/* Hero Header */}
       <motion.div
         variants={staggerItem}
         className="flex flex-col sm:flex-row gap-6 items-center sm:items-start pb-8 border-b border-neutral-800 text-center sm:text-left"
@@ -150,11 +149,13 @@ export default function AboutLayout({ page }: { page: PageResponse }) {
             </p>
           </div>
 
-          <div className="flex flex-wrap justify-center sm:justify-start items-center gap-2 pt-1">
-            <span className="text-xs bg-blue-500/10 text-blue-300 border border-blue-500/20 px-3 py-1 rounded-full font-medium">
-              {status}
-            </span>
-          </div>
+          {status && (
+            <div className="flex flex-wrap justify-center sm:justify-start items-center gap-2 pt-1">
+              <span className="text-xs bg-blue-500/10 text-blue-300 border border-blue-500/20 px-3 py-1 rounded-full font-medium">
+                {status}
+              </span>
+            </div>
+          )}
 
           <div className="flex flex-wrap justify-center sm:justify-start items-center gap-2 pt-2">
             {settings?.email && (
@@ -204,7 +205,6 @@ export default function AboutLayout({ page }: { page: PageResponse }) {
         </div>
       </motion.div>
 
-      {/* Stat Callouts */}
       {stats.length > 0 && (
         <motion.div variants={staggerItem} className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {stats.map((stat, idx) => (
@@ -230,7 +230,6 @@ export default function AboutLayout({ page }: { page: PageResponse }) {
         )}
       </motion.section>
 
-      {/* Work Experience */}
       {workExperience.length > 0 && (
         <motion.section variants={staggerItem} className="space-y-4">
           <h2 className="text-xs font-semibold uppercase tracking-wider text-neutral-400">
@@ -283,7 +282,7 @@ export default function AboutLayout({ page }: { page: PageResponse }) {
         </motion.section>
       )}
 
-      {/* Selected Projects */}
+
       {featuredProjects.length > 0 && (
         <motion.section variants={staggerItem} className="space-y-4">
           <h2 className="text-xs font-semibold uppercase tracking-wider text-neutral-400">
@@ -320,7 +319,6 @@ export default function AboutLayout({ page }: { page: PageResponse }) {
         </motion.section>
       )}
 
-      {/* Technical Toolkit */}
       {Object.keys(techByCategory).length > 0 && (
         <motion.section variants={staggerItem} className="space-y-4">
           <h2 className="text-xs font-semibold uppercase tracking-wider text-neutral-400">
@@ -341,7 +339,6 @@ export default function AboutLayout({ page }: { page: PageResponse }) {
         </motion.section>
       )}
 
-      {/* Education */}
       {education.length > 0 && (
         <motion.section variants={staggerItem} className="space-y-3">
           <h2 className="text-xs font-semibold uppercase tracking-wider text-neutral-400">
@@ -382,7 +379,6 @@ export default function AboutLayout({ page }: { page: PageResponse }) {
         </motion.section>
       )}
 
-      {/* Media Viewer / Full CV Section */}
       {allMediaItems.length > 0 && (
         <motion.section variants={staggerItem} className="pt-4 border-t border-neutral-800">
           <h2 className="text-xs font-semibold uppercase tracking-wider text-neutral-400 mb-4">

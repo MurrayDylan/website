@@ -80,7 +80,7 @@ export default function ContactLayout({ page }: { page?: PageResponse }) {
             className="flex items-center gap-4 text-neutral-300 text-lg"
           >
             <div className="h-2.5 w-2.5 rounded-full bg-emerald-500"></div>
-            <p>Based in Ireland (GMT) • Open to new opportunities</p>
+            <p>Based in Ireland • Open to new opportunities</p>
           </motion.div>
 
           {settings.email && (
